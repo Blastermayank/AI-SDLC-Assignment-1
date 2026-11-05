@@ -1,15 +1,15 @@
 ﻿import json
 
 def analyze_code(code: str) -> str:
-    # BUG 2: Violates Layer 1 (Structural - Returns string instead of JSON)
+    # FIXED BUG 2 (Layer 1 / INV2): Return valid JSON matching the schema when status is error
     if "SELECT * FROM users WHERE" in code and "id" not in code:
-        return "Error: SQL syntax incomplete"
+        return json.dumps({"status": "error", "findings": []})
         
-    # BUG 1: Violates Layer 2 (Invariant - Returns 'Critical' instead of High/Medium/Low)
+    # FIXED BUG 1 (INV1): Changed severity from 'Critical' to 'High' to respect property constraints
     if "SELECT * FROM users WHERE id =" in code:
-        return json.dumps({"status": "success", "findings": [{"vulnerability": "SQL Injection", "severity": "Critical", "remediation": "Use parameterized queries"}]})
+        return json.dumps({"status": "success", "findings": [{"vulnerability": "SQL Injection", "severity": "High", "remediation": "Use parameterized queries"}]})
     
-    # Generic mocked AI responses for the other cases to pass Layer 3 (Semantic)
+    # Generic mocked AI responses for the other cases
     if "os.system" in code: vuln, sev = "Command Injection", "High"
     elif "html" in code: vuln, sev = "Cross-Site Scripting (XSS)", "High"
     elif "password" in code: vuln, sev = "Hardcoded Credentials", "High"
