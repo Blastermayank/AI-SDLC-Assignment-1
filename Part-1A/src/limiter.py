@@ -1,5 +1,4 @@
 ﻿import time
-from typing import Dict
 from fastapi import HTTPException
 
 TIERS = {
@@ -21,18 +20,22 @@ class TokenBucket:
         
         # Refill tokens based on time elapsed
         self.tokens += elapsed * self.refill_rate
-        if self.tokens > self.capacity:
-            self.tokens = self.capacity
+        self.tokens = min(self.tokens, self.capacity)
         self.last_refill = now
 
         if self.tokens >= tokens:
             self.tokens -= tokens
             return True
         return False
+        
+    def time_until_next_token(self) -> int:
+        if self.tokens >= 1:
+            return 0
+        return int(max(1, (1 - self.tokens) / self.refill_rate))
 
 class RateLimiter:
     def __init__(self):
-        self.clients: Dict[str, TokenBucket] = {}
+        self.clients: dict[str, TokenBucket] = {}
 
     def check_request(self, client_id: str, tier: str = "free"):
         if client_id not in self.clients:
@@ -43,6 +46,10 @@ class RateLimiter:
         
         bucket = self.clients[client_id]
         if not bucket.consume(1):
-            # If tokens are exhausted, reject the request
-            raise HTTPException(status_code=429, detail="Too Many Requests")
+            retry_after = str(bucket.time_until_next_token())
+            raise HTTPException(
+                status_code=429, 
+                detail="Too Many Requests",
+                headers={"Retry-After": retry_after}
+            )
         return True
