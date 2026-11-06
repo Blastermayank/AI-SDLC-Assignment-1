@@ -170,7 +170,7 @@ img { max-width: 100%; }
 }
 .topbar-title { font-weight: 650; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .topbar-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
-.nav-toggle { display: none; }
+.btn.nav-toggle { display: none; }
 main { padding: 32px 36px 48px; max-width: 1200px; width: 100%; outline: none; }
 .view > .eyebrow { margin-bottom: 4px; }
 .footer {
@@ -352,7 +352,7 @@ a.chip:hover { border-color: var(--accent); color: var(--accent); }
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   }
   .sidebar.is-open { transform: none; visibility: visible; }
-  .nav-toggle { display: inline-flex; }
+  .btn.nav-toggle { display: inline-flex; }
   .topbar { padding: 10px 16px; }
   main { padding: 20px 16px 36px; }
   .footer { padding: 16px; }

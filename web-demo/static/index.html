@@ -66,7 +66,112 @@
         <section id="section-part-1a" class="view" aria-labelledby="h-part-1a" hidden>
           <p class="eyebrow">03 · Part 1A · Deterministic application</p>
           <h1 id="h-part-1a" tabindex="-1">Part 1A: Tiered Rate Limiter</h1>
-          <!-- slot:part-1a (T027) -->
+          <p class="lead">A deterministic rate-limiting component: the same sequence of requests always produces the same accept or reject decisions. Each client ID gets its own token bucket, sized by its subscription tier.</p>
+
+          <div class="grid-2 section-block">
+            <div class="card">
+              <h2>Problem statement</h2>
+              <p>A backend API must stop any single client from overwhelming it, while giving higher subscription tiers more capacity. Part 1A implements this as a Python component using the Token Bucket algorithm, with a separate in-memory bucket for every client ID.</p>
+              <h3>Intended behaviour</h3>
+              <ul>
+                <li>A request arrives with a client ID and a subscription tier.</li>
+                <li>If the client's bucket holds a token, one token is used and the request is accepted.</li>
+                <li>Tokens refill continuously at the tier's rate, up to the bucket's capacity.</li>
+                <li>If the bucket is empty, the component raises HTTP <code>429 Too Many Requests</code> with a <code>Retry-After</code> header.</li>
+                <li>Different client IDs never share a bucket.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h2>How the token bucket works</h2>
+              <p>Picture a bucket of tokens for each client. Every request takes one token, and tokens drip back in at a fixed rate. A full Free bucket holds 5 tokens and refills at 5 per minute, so a client can send 5 requests at once and then gets one more token about every 12 seconds.</p>
+              <div class="table-wrap">
+                <table id="rl-tiers">
+                  <caption class="visually-hidden">Tier configuration read from Part 1A</caption>
+                  <thead><tr><th>Tier</th><th class="num">Bucket capacity</th><th class="num">Refill rate</th><th class="num">One token every</th></tr></thead>
+                  <tbody><tr class="empty-row"><td colspan="4">Loading tier configuration…</td></tr></tbody>
+                </table>
+              </div>
+              <p class="hint">Read live from <code>TIERS</code> in <code>Part-1A/src/limiter.py</code>.</p>
+            </div>
+          </div>
+
+          <div class="card section-block">
+            <div class="card-header">
+              <h2>Try it: send requests to the real limiter</h2>
+              <span class="badge badge-info">Live HTTP</span>
+            </div>
+            <p class="muted">Each click sends one HTTP request to this portal's server, which calls Part 1A's <code>RateLimiter.check_request()</code>. Accepted requests return <code>200</code>. Rejected requests return a real <code>429</code> carrying the <code>Retry-After</code> header produced by Part 1A.</p>
+            <div class="split">
+              <form id="rl-form" class="stack-sm" novalidate>
+                <div class="field">
+                  <label for="rl-client-id">Client ID</label>
+                  <input type="text" id="rl-client-id" name="client_id" value="demo-client" maxlength="64" autocomplete="off" spellcheck="false" aria-describedby="rl-client-hint">
+                  <span class="hint" id="rl-client-hint">1 to 64 characters: letters, digits, <code>_</code> <code>.</code> <code>-</code></span>
+                </div>
+                <div class="field">
+                  <label for="rl-tier">Subscription tier</label>
+                  <select id="rl-tier" name="tier"><option value="free">free</option></select>
+                </div>
+                <div class="button-row">
+                  <button type="submit" class="btn btn-primary" id="rl-send">Send request</button>
+                  <button type="button" class="btn btn-secondary" id="rl-reset">Reset demonstration</button>
+                </div>
+                <p class="hint">Reset clears every client's bucket and the history below. Tier settings and limiter logic are not changed.</p>
+              </form>
+              <div class="stack-sm">
+                <div id="rl-last-outcome" class="outcome" aria-live="polite">
+                  <div class="outcome-title">No request sent yet</div>
+                  <div class="muted small">Send a request to see the limiter's decision.</div>
+                </div>
+                <div id="rl-tier-warning" class="callout callout-warn" hidden></div>
+                <div id="rl-notice" class="callout" role="status" hidden></div>
+              </div>
+            </div>
+            <h3 class="section-block">Request history <span class="muted small">(this page, newest first)</span></h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Time</th><th>Client ID</th><th>Tier sent</th><th>Outcome</th><th class="num">HTTP</th><th class="num">Retry-After</th><th class="num">Tokens left</th></tr></thead>
+                <tbody id="rl-history"><tr class="empty-row"><td colspan="7">No requests yet.</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="grid-2 section-block">
+            <div class="card">
+              <h2>Inputs and outputs</h2>
+              <dl class="kv">
+                <dt>Input</dt><dd>A client ID and a subscription tier.</dd>
+                <dt>Accepted</dt><dd><code>check_request()</code> returns <code>True</code>; the portal answers HTTP 200.</dd>
+                <dt>Rejected</dt><dd>Part 1A raises <code>HTTPException(429)</code> with <code>Retry-After</code>: the smallest whole number of seconds after which a retry is accepted.</dd>
+              </dl>
+              <h3 class="section-block">Acceptance criteria</h3>
+              <ul>
+                <li><strong>AC1</strong> Requests within the limit are accepted.</li>
+                <li><strong>AC2</strong> Requests over the limit are rejected with HTTP 429.</li>
+                <li><strong>AC3</strong> The 429 carries <code>Retry-After</code> equal to the smallest sufficient wait (clarified 2026-11-07).</li>
+                <li><strong>AC4</strong> Limits are isolated per client ID.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h2>Known limitations</h2>
+              <ul>
+                <li>Buckets live in process memory, so they are lost when the server restarts.</li>
+                <li>Separate worker processes or replicas do not share buckets; production use would need a shared store such as Redis.</li>
+                <li>A client's tier is fixed by its first request. Later requests with a different tier still use the first tier's bucket.</li>
+                <li>Inside Part 1A an unknown tier falls back to Free. This portal rejects unknown tiers before they reach Part 1A.</li>
+                <li>Part 1A is a Python component, not a deployed HTTP service; this portal adds the HTTP layer for demonstration.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card section-block">
+            <div class="card-header">
+              <h2>Harness results</h2>
+              <span id="rl-harness-badge"></span>
+            </div>
+            <p class="muted">The Part 1A harness runs three gates: <strong>Ruff</strong> (lint), <strong>Bandit</strong> (static security analysis) and <strong>Pytest</strong> (unit and acceptance-criteria tests). It is run from a terminal with <code>Part-1A/.harness/run.ps1</code>, which saves every run. This page only displays those saved runs; it never executes the harness.</p>
+            <div id="rl-harness"><p class="muted">Loading saved harness results…</p></div>
+          </div>
         </section>
 
         <section id="section-part-1b" class="view" aria-labelledby="h-part-1b" hidden>
