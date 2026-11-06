@@ -6,6 +6,7 @@ import './part1a.js';
 import './part1b.js';
 import './evaluation.js';
 import './evidence.js';
+import './methodology.js';
 
 const ROUTES = ['overview', 'methodology', 'part-1a', 'part-1b', 'evaluation', 'evidence'];
 const TITLES = {

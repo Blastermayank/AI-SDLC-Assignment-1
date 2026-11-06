@@ -54,13 +54,169 @@
         <section id="section-overview" class="view" aria-labelledby="h-overview">
           <p class="eyebrow">01 · Project Overview</p>
           <h1 id="h-overview" tabindex="-1">Project Overview</h1>
-          <!-- slot:overview (T043) -->
+          <div class="hero">
+            <p class="lead">Two small applications were built from GitHub Spec Kit specifications by an AI coding agent, then checked by automated harnesses that the agent must not weaken. Failures became evidence for repair, and a person makes the final accept or reject decision.</p>
+            <div class="hero-meta">
+              <span class="badge badge-info">BITS Pilani · SE ZG534</span>
+              <span class="badge badge-neutral">Specification-driven development</span>
+              <span class="badge badge-neutral">Harness engineering</span>
+            </div>
+          </div>
+
+          <div class="grid-2 section-block">
+            <article class="card app-card">
+              <div class="card-header">
+                <h2>Part 1A: Tiered Rate Limiter</h2>
+                <span class="badge badge-pass">Deterministic</span>
+              </div>
+              <p>A Token Bucket rate limiter with Free, Standard and Premium tiers. When a client runs out of tokens it receives HTTP 429 with a <code>Retry-After</code> header telling it how long to wait.</p>
+              <p class="small muted">Validated by Ruff, Bandit and Pytest using exact assertions.</p>
+              <a class="btn btn-primary btn-small" href="#part-1a">Open the live demo</a>
+            </article>
+            <article class="card app-card">
+              <div class="card-header">
+                <h2>Part 1B: AI Security Code Reviewer</h2>
+                <span class="badge badge-warn">Non-deterministic</span>
+              </div>
+              <p>Google Gemini (<code>gemini-3.5-flash-lite</code>) reviews submitted source code and returns structured security findings: vulnerability, severity, description, evidence and remediation.</p>
+              <p class="small muted">Validated by a three-layer evaluation harness over a 16-case dataset with an 80% threshold.</p>
+              <a class="btn btn-primary btn-small" href="#part-1b">Open the live demo</a>
+            </article>
+          </div>
+
+          <div class="card section-block">
+            <h2>What specification-driven development means here</h2>
+            <p>Instead of asking an AI agent to "build the app", work starts from written artifacts: a <strong>constitution</strong> of non-negotiable engineering rules, a <strong>specification</strong> with testable acceptance criteria, <strong>clarifications</strong> for ambiguous points, then a <strong>plan</strong> and <strong>tasks</strong>. The coding agent implements against those artifacts. When a requirement turns out to be ambiguous, the specification is revised and the change recorded, rather than a test being bent to fit the code.</p>
+            <p class="muted">In this repository, both applications have a constitution and a specification with acceptance criteria that were committed before their first implementation. Their 2026-11-07 change cycles add recorded clarifications, plans and tasks. This web portal went through the complete Spec Kit sequence itself. The <a href="#methodology">Methodology</a> section shows exactly which artifact exists for each stage.</p>
+          </div>
+
+          <div class="card section-block">
+            <h2>Why one deterministic and one non-deterministic application</h2>
+            <p class="muted">The same workflow is applied to two kinds of software that need different kinds of evidence.</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th></th><th>Part 1A: deterministic</th><th>Part 1B: non-deterministic</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Output</th><td>Same input, same decision, every time</td><td>Wording, and sometimes findings, vary between runs</td></tr>
+                  <tr><th scope="row">What is checked</th><td>Exact results, e.g. the sixth Free-tier request returns HTTP 429</td><td>Structure, rules that must always hold, and category-level meaning</td></tr>
+                  <tr><th scope="row">Harness</th><td>Ruff (lint), Bandit (security), Pytest (unit and acceptance tests)</td><td>Layer 1 schema, Layer 2 invariants, Layer 3 category/alias matching over a dataset</td></tr>
+                  <tr><th scope="row">Pass rule</th><td>Every gate passes</td><td>Aggregate score of 80% or more, with every case completed</td></tr>
+                  <tr><th scope="row">External dependency</th><td>None</td><td>Gemini API: availability, quota and network</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="grid-2 section-block">
+            <div class="card">
+              <h2>The role of the harnesses</h2>
+              <ul>
+                <li><strong>Independent:</strong> checks live in their own code and data. The coding agent must not weaken them; any change needs a recorded specification revision.</li>
+                <li><strong>Evidence-producing:</strong> every run is saved unedited, failures included.</li>
+                <li><strong>Feedback:</strong> a failing run's output is given back to the coding agent as the input for repair, and the same gates run again.</li>
+                <li><strong>Human decision last:</strong> an automated PASS is followed by an ACCEPT or REJECT decision recorded by the student.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h2>About this portal</h2>
+              <p>A presentation layer built on 2026-11-07. It calls the real Part 1A and Part 1B code and reads their saved evidence, but never modifies either. The Gemini API key stays on the server, submitted code is never executed, and model output is always displayed as plain text.</p>
+              <p class="small">Repository: <span id="overview-repo-link">Repository link not configured</span></p>
+            </div>
+          </div>
         </section>
 
         <section id="section-methodology" class="view" aria-labelledby="h-methodology" hidden>
           <p class="eyebrow">02 · Assignment Methodology</p>
           <h1 id="h-methodology" tabindex="-1">Assignment Methodology</h1>
-          <!-- slot:methodology (T044) -->
+          <p class="lead">Both applications follow the GitHub Spec Kit workflow. Each stage below links to the artifact that exists in this repository; stages without an artifact are marked "not in repository" rather than hidden.</p>
+
+          <div class="card section-block">
+            <h2>Workflow</h2>
+            <ol class="flow" aria-label="Specification-driven workflow">
+              <li>Problem statement</li>
+              <li>Constitution</li>
+              <li>Specify</li>
+              <li>Clarify</li>
+              <li>Plan</li>
+              <li>Tasks</li>
+              <li>Analyze</li>
+              <li>Implement</li>
+              <li>Harness validation</li>
+              <li class="flow-loop">Feedback and repair</li>
+              <li class="flow-loop">Revalidation</li>
+              <li>Human review</li>
+            </ol>
+            <p class="small muted section-block">Steps 10 and 11 repeat until the harness passes: the failing output is given to the coding agent, the implementation is repaired, and the <em>same</em> gates run again. Specifications, tests and thresholds are not changed to make a failure disappear; a genuine requirement change goes back through the specification and is recorded.</p>
+          </div>
+
+          <div class="card section-block">
+            <h2>Stages and artifacts</h2>
+            <div class="table-wrap">
+              <table class="stage-table">
+                <thead><tr><th>Stage</th><th>Part 1A: rate limiter</th><th>Part 1B: AI code reviewer</th></tr></thead>
+                <tbody>
+                  <tr><td>Constitution</td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1a-constitution">Constitution</span></div></td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1b-constitution">Constitution</span></div></td></tr>
+                  <tr><td>Specify</td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1a-spec">Specification</span></div></td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1b-spec">Specification</span></div></td></tr>
+                  <tr><td>Clarify</td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1a-spec">Clarifications section (2026-11-07)</span><span class="chip" data-evidence-id="1a-clarify">Separate clarification file</span></div></td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1b-spec">Clarifications section (2026-11-07)</span><span class="chip" data-evidence-id="1b-clarify">Separate clarification file</span></div></td></tr>
+                  <tr><td>Plan</td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1a-plan">Original plan</span><span class="chip" data-evidence-id="1a-cycle-plan">2026-11-07 change-cycle plan</span></div></td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1b-plan">Original plan</span><span class="chip" data-evidence-id="1b-cycle-plan">2026-11-07 change-cycle plan</span></div></td></tr>
+                  <tr><td>Tasks</td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1a-tasks">Original tasks</span><span class="chip" data-evidence-id="1a-cycle-tasks">2026-11-07 change-cycle tasks</span></div></td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1b-tasks">Original tasks</span><span class="chip" data-evidence-id="1b-cycle-tasks">2026-11-07 change-cycle tasks</span></div></td></tr>
+                  <tr><td>Analyze</td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1a-analyze">Analysis report</span></div></td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1b-analyze">Analysis report</span></div></td></tr>
+                  <tr><td>Implement</td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1a-initial">Initial generation</span><span class="chip" data-evidence-id="1a-final">Final generation (2026-11-05)</span><span class="chip" data-evidence-id="1a-final-ac3">After AC3 repair (2026-11-07)</span><span class="chip" data-evidence-id="1a-src">Current source</span></div></td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1b-initial">Initial generation</span><span class="chip" data-evidence-id="1b-final">Final generation</span><span class="chip" data-evidence-id="1b-src">Current source</span></div></td></tr>
+                  <tr><td>Harness validation</td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1a-harness">Harness runner</span><span class="chip" data-evidence-id="1a-tests">Spec-derived tests</span></div></td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1b-evaluator">Evaluation harness</span><span class="chip" data-evidence-id="1b-dataset">Evaluation dataset</span><span class="chip" data-evidence-id="1b-tests">Unit tests</span></div></td></tr>
+                  <tr><td>Feedback and repair</td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1a-evidence-readme">Saved runs: baseline, FAIL, then PASS</span></div></td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1b-evidence-readme">Saved reports and test runs</span></div></td></tr>
+                  <tr><td>Revalidation</td>
+                    <td><div class="chip-list"><a class="chip" href="#part-1a">Latest harness result (Part 1A page)</a></div></td>
+                    <td><div class="chip-list"><a class="chip" href="#evaluation">Evaluation Dashboard</a></div></td></tr>
+                  <tr><td>Human review</td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1a-harness-log">Harness log and decision</span></div></td>
+                    <td><div class="chip-list"><span class="chip" data-evidence-id="1b-harness-log">Harness log and decision</span></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="grid-2 section-block">
+            <div class="card">
+              <h2>Part 1A: deterministic harness</h2>
+              <ol>
+                <li><strong>Syntax and lint guard (Ruff):</strong> code-quality rules; zero findings required.</li>
+                <li><strong>Security guard (Bandit):</strong> static security analysis; zero medium- or high-severity findings.</li>
+                <li><strong>Unit and contract tests (Pytest):</strong> exact assertions derived from acceptance criteria AC1 to AC4.</li>
+              </ol>
+              <p class="small muted">The harness exits with a failure code if any gate fails, and saves every run with unedited transcripts.</p>
+            </div>
+            <div class="card">
+              <h2>Part 1B: evaluation harness</h2>
+              <ol>
+                <li><strong>Layer 1 · Schema:</strong> JSON structure, required fields, types and allowed severities.</li>
+                <li><strong>Layer 2 · Invariants:</strong> expected status, no findings on error, at most ten findings, exact evidence excerpts.</li>
+                <li><strong>Layer 3 · Semantic:</strong> expected vulnerability category matched with configured aliases.</li>
+                <li><strong>Aggregate:</strong> passed ÷ completed cases; PASS at 80% or more with every case completed.</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="callout section-block">
+            <p>Harness logs and the final ACCEPT or REJECT decisions are written by the student, not generated by AI, as the assignment requires.</p>
+          </div>
         </section>
 
         <section id="section-part-1a" class="view" aria-labelledby="h-part-1a" hidden>
