@@ -9,6 +9,28 @@ The application uses the Google Gemini API for actual inference. Model output
 is constrained to a structured JSON contract and validated locally before
 being evaluated by the harness.
 
+## Clarifications
+
+### Session 2026-11-07
+
+- Q: Should the evaluation dataset cover the "missing mandatory information"
+  category (assignment section 4.5), given that Section 2 requires empty or
+  whitespace-only input to return an error response but no case tested it?
+  → A: Yes. Add one case (id 16, type `missing`) with whitespace-only input
+  whose expected outcome is `status: error` with no findings. Decided by the
+  repository owner on 2026-11-06 (recorded in the web portal clarification
+  session) and actioned on 2026-11-07. Because INV8 previously required every
+  evaluation case to return `success`, INV8 is revised to compare each
+  response with the case's declared expected status. The threshold (80%) is
+  unchanged.
+- Q: How are evaluation reports kept traceable and preserved? → A: Each report
+  records the SHA-256 of the dataset file it used, and the evaluator archives
+  the existing current report before writing a new one, so no run overwrites
+  an earlier result. (Proposed by the coding agent as part of the change
+  cycle the repository owner approved on 2026-11-07; prompted by the audit
+  finding that saved reports did not identify which dataset version produced
+  them.)
+
 ## 2. Input Requirements
 
 - Accept a code snippet as a string.
@@ -75,8 +97,12 @@ A successful analysis with no supported security findings must return
   the supplied source code.
 - **INV7 - Finding limit:** The reviewer must not return more than
   ten findings for one input.
-- **INV8 - Analysis consistency:** Successfully analyzed evaluation inputs
-  must have `status: success`, whether findings are present or absent.
+- **INV8 - Expected status:** The response status must equal the case's
+  declared expected status. Analyzable inputs (the default) must return
+  `status: success`, whether findings are present or absent; inputs that
+  cannot be analyzed because mandatory input is missing (empty or
+  whitespace-only) must return `status: error` with no findings
+  (revised 2026-11-07, see Clarifications).
 
 Additional guardrails:
 
@@ -116,10 +142,14 @@ category and alias matching. It does not use an independent LLM-as-a-Judge.
 
 - Maintain a dataset containing at least 15 meaningful evaluation cases.
 - Include normal vulnerability cases, negative cases, boundary cases,
-  ambiguous inputs, and guardrail-related cases.
+  ambiguous inputs, guardrail-related cases, and missing-mandatory-information
+  cases.
 - Each case must define an identifier, type, input, and expected
-  vulnerability category.
+  vulnerability category. A case may also define `expected_status`
+  (`success` or `error`); when absent it is `success`.
 - The dataset is maintained separately from the evaluator implementation.
+- Existing cases must not be removed or have their inputs or expected results
+  changed without a recorded specification revision.
 
 ## 7. Aggregate Evaluation and Pass Threshold
 
@@ -135,6 +165,11 @@ AI inference -> JSON schema validation -> invariants and guardrails
   score reaches or exceeds the threshold.
 - An incomplete run must be distinguished from a completed evaluation
   that fails the threshold.
+- Each report must record the dataset file and its SHA-256 so the dataset
+  version behind every score can be identified.
+- Before writing a new report, the evaluator must archive the existing
+  current report under `evidence/eval-results-run-<N>-<score>pct.json` (or
+  `-incomplete`), skipping the copy only if an identical archive exists.
 
 ## 8. Non-Functional Requirements
 
