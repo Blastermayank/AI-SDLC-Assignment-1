@@ -1,6 +1,10 @@
-﻿import time
+﻿import math
+import time
 
 from fastapi import HTTPException
+
+# Absorbs floating-point noise such as 1 / (5 / 60) == 12.000000000000002.
+_FLOAT_TOLERANCE = 1e-9
 
 TIERS = {
     "free": {"capacity": 5, "refill_rate": 5 / 60.0},
@@ -30,9 +34,15 @@ class TokenBucket:
         return False
         
     def time_until_next_token(self) -> int:
+        """Smallest whole number of seconds after which one token is available (AC3)."""
         if self.tokens >= 1:
             return 0
-        return int(max(1, (1 - self.tokens) / self.refill_rate))
+        # Round up (not down) so a client that waits the advertised time is accepted.
+        seconds = max(1, math.ceil((1 - self.tokens) / self.refill_rate - _FLOAT_TOLERANCE))
+        # Guarantee sufficiency with the same arithmetic consume() uses.
+        while self.tokens + seconds * self.refill_rate < 1:
+            seconds += 1
+        return seconds
 
 class RateLimiter:
     def __init__(self):
