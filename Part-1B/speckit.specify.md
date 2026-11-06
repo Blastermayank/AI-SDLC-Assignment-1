@@ -24,7 +24,9 @@ being evaluated by the harness.
   response with the case's declared expected status. The threshold (80%) is
   unchanged.
 - Q: How are evaluation reports kept traceable and preserved? → A: Each report
-  records the SHA-256 of the dataset file it used, and the evaluator archives
+  records the SHA-256 of the dataset's canonical JSON content (independent of
+  line endings and byte-order mark; refined on 2026-11-07 after observing that
+  the file's bytes differ between CRLF and LF checkouts), and the evaluator archives
   the existing current report before writing a new one, so no run overwrites
   an earlier result. (Proposed by the coding agent as part of the change
   cycle the repository owner approved on 2026-11-07; prompted by the audit
@@ -165,8 +167,9 @@ AI inference -> JSON schema validation -> invariants and guardrails
   score reaches or exceeds the threshold.
 - An incomplete run must be distinguished from a completed evaluation
   that fails the threshold.
-- Each report must record the dataset file and its SHA-256 so the dataset
-  version behind every score can be identified.
+- Each report must record the dataset file and the SHA-256 of its canonical
+  JSON content (keys sorted, compact separators, UTF-8), so the dataset
+  version behind every score can be identified on any checkout.
 - Before writing a new report, the evaluator must archive the existing
   current report under `evidence/eval-results-run-<N>-<score>pct.json` (or
   `-incomplete`), skipping the copy only if an identical archive exists.

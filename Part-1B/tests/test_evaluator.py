@@ -130,9 +130,21 @@ def test_blank_input_returns_error_response_without_model_call(blank, monkeypatc
 # --- Section 7: report traceability and preservation -------------------------
 
 
-def test_dataset_fingerprint_is_sha256_of_file_bytes():
-    expected = hashlib.sha256(DATASET_FILE.read_bytes()).hexdigest()
+def test_dataset_fingerprint_is_sha256_of_canonical_json():
+    canonical = json.dumps(
+        _load_json(DATASET_FILE), sort_keys=True, ensure_ascii=False, separators=(",", ":")
+    )
+    expected = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
     assert evaluate.dataset_fingerprint(DATASET_FILE) == expected
+
+
+def test_dataset_fingerprint_ignores_line_endings_and_bom(tmp_path):
+    text = DATASET_FILE.read_text(encoding="utf-8-sig").replace("\r\n", "\n")
+    lf_file = tmp_path / "lf.json"
+    crlf_bom_file = tmp_path / "crlf_bom.json"
+    lf_file.write_bytes(text.encode("utf-8"))
+    crlf_bom_file.write_bytes(b"\xef\xbb\xbf" + text.replace("\n", "\r\n").encode("utf-8"))
+    assert evaluate.dataset_fingerprint(lf_file) == evaluate.dataset_fingerprint(crlf_bom_file)
 
 
 def test_archive_copies_current_report_to_next_run_number(tmp_path):
