@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 import re
@@ -155,7 +156,8 @@ def semantic_check(expected, findings):
     )
 
 
-def invariant_check(output, source_code):
+def invariant_check(output, source_code, expected_status="success"):
+    """Layer 2 invariants. INV8 compares the status with the case's expected status."""
     errors_found = []
 
     findings = output.get("findings", [])
@@ -163,9 +165,9 @@ def invariant_check(output, source_code):
 
     if status == "error" and findings:
         errors_found.append("Error status must not contain findings.")
-    elif status != "success":
+    elif status != expected_status:
         errors_found.append(
-            f"Expected status 'success', received {status!r}."
+            f"Expected status {expected_status!r}, received {status!r}."
         )
 
     if len(findings) > 10:
@@ -187,6 +189,55 @@ def invariant_check(output, source_code):
     return errors_found
 
 
+def dataset_fingerprint(path):
+    """SHA-256 of the dataset's canonical JSON content, recorded in every report (Section 7).
+
+    Sorted keys, compact separators and UTF-8 make the value independent of
+    line endings and a byte-order mark, so every checkout of the same dataset
+    produces the same fingerprint.
+    """
+    data = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    canonical = json.dumps(data, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+ARCHIVE_NAME = re.compile(r"^eval-results-run-(\d+)-")
+
+
+def archive_existing_report(output_file):
+    """Copy the current report to the next eval-results-run-<N>-<score>pct.json.
+
+    Runs before a new report is written so no earlier result is overwritten
+    (Section 7). Returns the archive path, or None when there is no current
+    report or an identical archive already exists.
+    """
+    output_file = Path(output_file)
+    if not output_file.exists():
+        return None
+
+    content = output_file.read_bytes()
+    archives = list(output_file.parent.glob("eval-results-run-*.json"))
+    if any(path.read_bytes() == content for path in archives):
+        return None
+
+    numbers = []
+    for path in archives:
+        match = ARCHIVE_NAME.match(path.name)
+        if match:
+            numbers.append(int(match.group(1)))
+
+    try:
+        report = json.loads(content.decode("utf-8-sig"))
+        score = report.get("aggregate_score")
+        label = f"{score:.1f}pct" if isinstance(score, (int, float)) else "incomplete"
+    except (ValueError, AttributeError):
+        label = "unreadable"
+
+    archive = output_file.parent / f"eval-results-run-{max(numbers, default=0) + 1}-{label}.json"
+    archive.write_bytes(content)
+    return archive
+
+
 def main():
     with DATASET_FILE.open("r", encoding="utf-8-sig") as file:
         dataset = json.load(file)
@@ -202,15 +253,18 @@ def main():
     print("Starting Gemini 3-layer evaluation...")
     print(f"Model: {MODEL}")
     print(f"Dataset cases: {len(dataset)}")
+    print(f"Dataset SHA-256: {dataset_fingerprint(DATASET_FILE)}")
     print(f"Passing threshold: {THRESHOLD:.1f}%\n")
 
     for case in dataset:
         case_id = case.get("id")
         source_code = case.get("input", "")
         expected = case.get("expected_vuln", "")
+        expected_status = case.get("expected_status", "success")
 
         result = {
             "id": case_id,
+            "expected_status": expected_status,
             "layer1": False,
             "layer2": False,
             "layer3": False,
@@ -259,7 +313,7 @@ def main():
 
         # Layer 2: Invariants and guardrails
         if result["layer1"]:
-            invariant_errors = invariant_check(output, source_code)
+            invariant_errors = invariant_check(output, source_code, expected_status)
             result["layer2"] = len(invariant_errors) == 0
 
             if invariant_errors:
@@ -309,6 +363,8 @@ def main():
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "model": MODEL,
         "threshold": THRESHOLD,
+        "dataset_file": DATASET_FILE.relative_to(PROJECT_DIR).as_posix(),
+        "dataset_sha256": dataset_fingerprint(DATASET_FILE),
         "total_cases": len(dataset),
         "completed_cases": completed_cases,
         "passed_cases": passed_cases,
@@ -324,6 +380,10 @@ def main():
     }
 
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+    archived = archive_existing_report(OUTPUT_FILE)
+    if archived:
+        print(f"Previous report archived to: {archived}")
 
     with OUTPUT_FILE.open("w", encoding="utf-8") as file:
         json.dump(report, file, indent=2, ensure_ascii=False)

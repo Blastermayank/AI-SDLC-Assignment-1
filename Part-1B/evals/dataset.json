@@ -88,5 +88,12 @@
     "type": "ambiguous",
     "input": "pickle.loads(untrusted_bytes)",
     "expected_vuln": "Insecure Deserialization"
+  },
+  {
+    "id": 16,
+    "type": "missing",
+    "input": "   \n\t  ",
+    "expected_vuln": "None",
+    "expected_status": "error"
   }
 ]

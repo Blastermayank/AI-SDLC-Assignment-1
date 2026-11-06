@@ -1,0 +1,66 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0 -- E:\Mtech Assignment\AI_SDLC\Assignment-1\Part-1B\.venv\Scripts\python.exe
+rootdir: E:\Mtech Assignment\AI_SDLC\Assignment-1\Part-1B
+plugins: anyio-4.16.0
+collecting ... collected 23 items
+
+tests/test_evaluator.py::test_valid_success_response_has_no_invariant_violations PASSED [  4%]
+tests/test_evaluator.py::test_inv8_default_expected_status_is_success PASSED [  8%]
+tests/test_evaluator.py::test_inv8_expected_error_status_accepts_error_response PASSED [ 13%]
+tests/test_evaluator.py::test_inv8_expected_error_status_rejects_success_response PASSED [ 17%]
+tests/test_evaluator.py::test_inv3_error_response_must_not_contain_findings PASSED [ 21%]
+tests/test_evaluator.py::test_inv4_invalid_severity_is_reported PASSED   [ 26%]
+tests/test_evaluator.py::test_inv6_evidence_must_be_an_exact_source_excerpt PASSED [ 30%]
+tests/test_evaluator.py::test_inv7_more_than_ten_findings_is_reported PASSED [ 34%]
+tests/test_evaluator.py::test_sem1_sem2_alias_matches_expected_category PASSED [ 39%]
+tests/test_evaluator.py::test_sem1_unrelated_category_does_not_match PASSED [ 43%]
+tests/test_evaluator.py::test_sem3_negative_case_requires_empty_findings PASSED [ 47%]
+tests/test_evaluator.py::test_blank_input_returns_error_response_without_model_call[] PASSED [ 52%]
+tests/test_evaluator.py::test_blank_input_returns_error_response_without_model_call[   ] PASSED [ 56%]
+tests/test_evaluator.py::test_blank_input_returns_error_response_without_model_call[   \n\t  ] PASSED [ 60%]
+tests/test_evaluator.py::test_dataset_fingerprint_is_sha256_of_canonical_json FAILED [ 65%]
+tests/test_evaluator.py::test_dataset_fingerprint_ignores_line_endings_and_bom FAILED [ 69%]
+tests/test_evaluator.py::test_archive_copies_current_report_to_next_run_number PASSED [ 73%]
+tests/test_evaluator.py::test_archive_skips_when_an_identical_archive_exists PASSED [ 78%]
+tests/test_evaluator.py::test_archive_names_incomplete_reports PASSED    [ 82%]
+tests/test_evaluator.py::test_archive_does_nothing_without_a_current_report PASSED [ 86%]
+tests/test_evaluator.py::test_dataset_cases_have_required_fields_and_unique_ids PASSED [ 91%]
+tests/test_evaluator.py::test_dataset_covers_missing_mandatory_information PASSED [ 95%]
+tests/test_evaluator.py::test_original_cases_are_unchanged PASSED        [100%]
+
+================================== FAILURES ===================================
+____________ test_dataset_fingerprint_is_sha256_of_canonical_json _____________
+
+    def test_dataset_fingerprint_is_sha256_of_canonical_json():
+        canonical = json.dumps(
+            _load_json(DATASET_FILE), sort_keys=True, ensure_ascii=False, separators=(",", ":")
+        )
+        expected = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+>       assert evaluate.dataset_fingerprint(DATASET_FILE) == expected
+E       AssertionError: assert 'e6f3c1d2fc60...dbd9e7a7134d9' == 'f9e71665da2f...18cad4dfa1e16'
+E         
+E         - f9e71665da2f8c926e06ea05a3ae8e902dc1287f541af136bd718cad4dfa1e16
+E         + e6f3c1d2fc60c0c2835709f8966851fbeb321d761d989fe3818dbd9e7a7134d9
+
+tests\test_evaluator.py:138: AssertionError
+____________ test_dataset_fingerprint_ignores_line_endings_and_bom ____________
+
+tmp_path = WindowsPath('C:/Users/mayan/AppData/Local/Temp/pytest-of-mayan/pytest-2/test_dataset_fingerprint_ignor0')
+
+    def test_dataset_fingerprint_ignores_line_endings_and_bom(tmp_path):
+        text = DATASET_FILE.read_text(encoding="utf-8-sig").replace("\r\n", "\n")
+        lf_file = tmp_path / "lf.json"
+        crlf_bom_file = tmp_path / "crlf_bom.json"
+        lf_file.write_bytes(text.encode("utf-8"))
+        crlf_bom_file.write_bytes(b"\xef\xbb\xbf" + text.replace("\n", "\r\n").encode("utf-8"))
+>       assert evaluate.dataset_fingerprint(lf_file) == evaluate.dataset_fingerprint(crlf_bom_file)
+E       AssertionError: assert 'cbb4d424c47c...3c0aa4de9b2d9' == '095710591e0c...66f2814b0c8f4'
+E         
+E         - 095710591e0cccc01f688881e8bc6377d2e9b9bea38202b5a9f66f2814b0c8f4
+E         + cbb4d424c47c372a7eb7db91efc6a23142ed7ddb6e734549f713c0aa4de9b2d9
+
+tests\test_evaluator.py:147: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_evaluator.py::test_dataset_fingerprint_is_sha256_of_canonical_json
+FAILED tests/test_evaluator.py::test_dataset_fingerprint_ignores_line_endings_and_bom
+======================== 2 failed, 21 passed in 0.95s =========================
