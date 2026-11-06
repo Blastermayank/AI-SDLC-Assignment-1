@@ -177,7 +177,116 @@
         <section id="section-part-1b" class="view" aria-labelledby="h-part-1b" hidden>
           <p class="eyebrow">04 · Part 1B · Non-deterministic AI application</p>
           <h1 id="h-part-1b" tabindex="-1">Part 1B: AI Security Code Reviewer</h1>
-          <!-- slot:part-1b (T033) -->
+          <p class="lead">An AI-assisted security reviewer: you paste source code, Google Gemini analyses it, and the application returns structured findings. Because the model is non-deterministic, the wording (and sometimes the findings) can change between requests.</p>
+
+          <div class="grid-2 section-block">
+            <div class="card">
+              <h2>Problem statement</h2>
+              <p>Manual security review is slow and inconsistent. Part 1B sends a code snippet to a Gemini model and asks for security findings in a fixed JSON structure, so that software can validate the answer even though the model's wording varies.</p>
+              <h3>How Gemini is used</h3>
+              <dl class="kv">
+                <dt>Model</dt><dd><code>gemini-3.5-flash-lite</code> (configurable with <code>GEMINI_MODEL</code>)</dd>
+                <dt>SDK</dt><dd>Google Gen AI Python SDK, <code>google-genai</code></dd>
+                <dt>Output</dt><dd>JSON constrained by a response schema, temperature 0.1, then validated locally</dd>
+                <dt>Credential</dt><dd><code>GEMINI_API_KEY</code>, read only by the server; it never reaches this page</dd>
+              </dl>
+            </div>
+            <div class="card">
+              <h2>Why the output is non-deterministic</h2>
+              <p>A language model generates text by sampling. Two requests with the same code can produce different wording, a different category name ("Remote Code Execution" instead of "Code Injection") or occasionally a different set of findings. Exact text matching is therefore the wrong test. Part 1B checks <strong>structure</strong>, <strong>rules that must always hold</strong> and <strong>category-level meaning</strong> instead.</p>
+              <h3>Output contract</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Field</th><th>Rule</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>status</code></td><td><code>success</code> (analysis completed) or <code>error</code> (input could not be analysed)</td></tr>
+                    <tr><td><code>findings</code></td><td>Array of zero to ten findings</td></tr>
+                    <tr><td><code>vulnerability</code></td><td>Non-empty category name</td></tr>
+                    <tr><td><code>severity</code></td><td><code>High</code>, <code>Medium</code> or <code>Low</code> only</td></tr>
+                    <tr><td><code>description</code></td><td>Non-empty explanation</td></tr>
+                    <tr><td><code>evidence</code></td><td>Exact excerpt of the submitted code</td></tr>
+                    <tr><td><code>remediation</code></td><td>Practical fix</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="card section-block">
+            <div class="card-header">
+              <h2>Try it: review code with the live model</h2>
+              <span class="badge badge-info">Live Gemini call</span>
+            </div>
+            <div class="callout">
+              <p><strong>Your code is treated as data.</strong> It is sent to Gemini for analysis and is never executed, imported or saved by this portal. Instructions written inside the code are ignored by the reviewer.</p>
+            </div>
+            <div class="stack-sm section-block">
+              <div class="field">
+                <label for="rv-code">Source code to review</label>
+                <textarea id="rv-code" maxlength="20000" spellcheck="false" autocomplete="off" aria-describedby="rv-help rv-count" placeholder="Paste a code snippet in any language, or load a sample below."></textarea>
+                <div class="editor-meta">
+                  <span class="hint" id="rv-help">Up to 20,000 characters. Empty or whitespace-only input is not sent. Ctrl+Enter analyses.</span>
+                  <span class="hint" id="rv-count" aria-live="polite">0 / 20,000</span>
+                </div>
+              </div>
+              <div class="sample-row" id="rv-samples" role="group" aria-label="Load a sample snippet">
+                <span class="hint">Samples:</span>
+                <button type="button" class="btn btn-secondary btn-small" data-sample="sql">SQL injection</button>
+                <button type="button" class="btn btn-secondary btn-small" data-sample="command">Command injection</button>
+                <button type="button" class="btn btn-secondary btn-small" data-sample="credential">Hardcoded credential</button>
+                <button type="button" class="btn btn-secondary btn-small" data-sample="benign">Benign function</button>
+              </div>
+              <div class="button-row">
+                <button type="button" class="btn btn-primary" id="rv-analyze" disabled>Analyse code</button>
+                <button type="button" class="btn btn-secondary" id="rv-clear">Clear</button>
+              </div>
+              <div class="status-line" id="rv-status" role="status" aria-live="polite">
+                <span class="muted">Results appear below. A live call usually takes a few seconds.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="split split-reverse section-block">
+            <div class="stack-sm">
+              <h2>Findings</h2>
+              <div id="rv-findings" class="stack-sm"><p class="muted">No analysis yet.</p></div>
+            </div>
+            <div class="stack-sm">
+              <div class="card">
+                <h2>Live harness checks</h2>
+                <p class="muted small">The same Layer 1 and Layer 2 functions the evaluation harness uses, applied to this response.</p>
+                <div id="rv-live-checks"><p class="muted">Run an analysis to see the checks.</p></div>
+              </div>
+              <details id="rv-raw">
+                <summary>Raw JSON response</summary>
+                <div class="details-body"><pre>No response yet.</pre></div>
+              </details>
+            </div>
+          </div>
+
+          <div class="grid-2 section-block">
+            <div class="card">
+              <h2>Safety and guardrails</h2>
+              <ul>
+                <li>Submitted code is untrusted data: never executed, imported or stored by the portal.</li>
+                <li>The reviewer's prompt tells Gemini to ignore instructions embedded in the code and to report prompt-injection attempts.</li>
+                <li>Evidence must be an exact excerpt of the submitted code; Layer 2 checks this.</li>
+                <li>At most ten findings; severity limited to High, Medium or Low.</li>
+                <li>Model output is displayed as plain text. HTML inside findings is never rendered.</li>
+                <li>Service failures (quota, outage, timeout) are shown as errors, never as "no vulnerabilities".</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h2>Known limitations</h2>
+              <ul>
+                <li>Results depend on Gemini's availability, quota and network access.</li>
+                <li>Findings can vary between requests, so one result is not a stable verdict.</li>
+                <li>"No findings" does not prove code is secure; findings are suggestions for a person to review.</li>
+                <li>The 16-case evaluation dataset cannot cover every vulnerability type or language.</li>
+                <li>Layer 3 compares vulnerability categories using configured aliases; it is not an independent LLM judge.</li>
+              </ul>
+            </div>
+          </div>
         </section>
 
         <section id="section-evaluation" class="view" aria-labelledby="h-evaluation" hidden>

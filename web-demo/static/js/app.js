@@ -3,6 +3,7 @@ import { get } from './api.js';
 import { clear, el } from './dom.js';
 import { noteServerInstance, portalState, sections } from './registry.js';
 import './part1a.js';
+import './part1b.js';
 
 const ROUTES = ['overview', 'methodology', 'part-1a', 'part-1b', 'evaluation', 'evidence'];
 const TITLES = {
