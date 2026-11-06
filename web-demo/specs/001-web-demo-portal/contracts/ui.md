@@ -24,6 +24,9 @@ active. A `<noscript>` message explains that interactive demonstrations need Jav
 - `#health-badge`: shows portal, Part 1A and Part 1B status ("Gemini configured" /
   "Gemini not configured"). Never shows any part of the key.
 - `#theme-toggle`: switches light/dark; follows the OS preference by default.
+- `#repo-link` (footer) and `#overview-repo-link`: the configured repository URL as a link, or the
+  text "Repository link not configured".
+- The page icon is `/static/img/icon.svg`.
 
 ## Part 1A
 
@@ -35,7 +38,7 @@ active. A `<noscript>` message explains that interactive demonstrations need Jav
 | `#rl-reset` (button) | Resets all buckets and clears history |
 | `#rl-last-outcome` (aria-live="polite") | Last outcome: ACCEPTED/REJECTED, HTTP status, `Retry-After` |
 | `#rl-tier-warning` | Visible only when `tier_mismatch` is true |
-| `#rl-history` (table body) | One row per server response, newest first |
+| `#rl-history` (table body) | One row per server response, newest first; cleared with a "server restarted" notice when `server_instance` changes |
 | `#rl-tiers` (table) | Tier configuration from `/api/part-1a/tiers` |
 | `#rl-harness` | Latest saved harness run, or "No saved harness results" |
 

@@ -39,6 +39,7 @@ Invalid input → 422 `invalid_input`; the limiter is not called and no bucket i
 | `tokens_remaining` | number | Bucket `tokens` after the call, rounded to 3 decimals (display only) |
 | `capacity` | integer | Bucket `capacity` |
 | `timestamp_utc` | string | ISO 8601, server time of the decision |
+| `server_instance` | string | UUID generated at server start; a change means the server restarted (FR-013) |
 
 The HTTP response's own status code and `Retry-After` header carry the same values as
 `status_code` and `retry_after_seconds` (the header string is passed through unchanged).
@@ -56,7 +57,14 @@ The tier `T` is fixed at the first request; later requests with another tier sti
 
 ## RequestHistoryEntry *(browser memory only, current page session)*
 
-`RateLimitOutcome` fields shown in a table, newest first. Cleared by reset or page reload.
+`RateLimitOutcome` fields shown in a table, newest first. Cleared by reset, page reload, or a
+response whose `server_instance` differs from the one the page last saw.
+
+## PortalConfig *(source: `web-demo/portal-config.json`, read at start-up)*
+
+| Field | Type | Rule |
+|---|---|---|
+| `repository_url` | string or null | Used only if it matches `^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/?$`; otherwise treated as not configured (FR-004) |
 
 ## ReviewSubmission *(API input)*
 

@@ -43,3 +43,7 @@
   FR-027; User Story 3 scenario 4 / FR-033; User Story 4 scenario 3 / FR-017) were resolved by
   the repository owner in the 2026-11-06 clarification session and recorded in the spec's
   Clarifications section. Result: 16/16 items passing.
+- Iteration 3 (2026-11-07): `/speckit-analyze` remediation approved by the owner. Added FR-004
+  (repository link), extended FR-013 (restart detection), made SC-004 measurable (≥10 recorded
+  submissions), clarified the server-restart edge case, normalised "Gemini not configured".
+  Re-validated: 16/16 items passing.

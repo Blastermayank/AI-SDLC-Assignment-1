@@ -59,6 +59,19 @@ results vary between calls by design.
 
 ## Live Gemini verification record (manual, FR-020 / SC-004)
 
-Run V6 with three different samples (SQL injection, command injection, a benign function).
-Record for each: timestamp, model, elapsed time, number of findings, live Layer 1/2 result.
-Save the record under `web-demo/evidence/` as part of the verification evidence.
+Run V6 with at least 10 valid submissions covering different samples (for example SQL injection,
+command injection, hardcoded credential, insecure deserialisation, a benign function). Record for
+each: timestamp, model, elapsed time, outcome category, number of findings, live Layer 1/2
+result. SC-004 passes when every submission ends within 60 s and at least 9 of 10 end in a
+displayed result. Save the record under `web-demo/evidence/`.
+
+## Fresh-start timing (SC-008)
+
+Delete `web-demo/.venv`, start a stopwatch, run `start.ps1`, and stop when the overview is
+visible in the browser. Record the elapsed time (target: 10 minutes or less).
+
+## Browser coverage note
+
+Automated browser tests use Microsoft Edge. Chrome uses the same Chromium engine; the manual
+walkthrough may be repeated in Chrome to confirm the constitution's "current Chrome and Edge"
+support.

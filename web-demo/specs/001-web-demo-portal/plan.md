@@ -115,30 +115,43 @@ Assignment-1/                     # repository root
     │       ├── part1b.py
     │       ├── evaluation.py
     │       └── evidence.py
+    ├── portal-config.json        # repository_url (FR-004), edited by the owner
     ├── static/
     │   ├── index.html            # six sections, static explanatory content
     │   ├── css/portal.css
-    │   ├── img/                  # SVG icon(s)
+    │   ├── img/icon.svg          # page icon (avoids favicon 404, research R16)
     │   └── js/
-    │       ├── app.js            # router, theme, health badge
+    │       ├── app.js            # router, theme, health badge, repository link
     │       ├── api.js            # fetch wrapper, error envelope handling
     │       ├── dom.js            # safe element builders (textContent only)
     │       ├── part1a.js
     │       ├── part1b.js
     │       ├── evaluation.js
+    │       ├── methodology.js    # artifact availability chips
     │       └── evidence.js
     ├── tests/
     │   ├── conftest.py           # app fixture, sentinel key, fake Gemini client, tmp report dirs
     │   ├── fixtures/             # copies of reference reports for deterministic tests
+    │   ├── test_backends.py
     │   ├── test_health.py
+    │   ├── test_security.py
     │   ├── test_part1a_api.py
+    │   ├── test_harness_results.py
     │   ├── test_part1b_api.py
     │   ├── test_evaluation_api.py
     │   ├── test_evidence_api.py
-    │   ├── test_security.py
+    │   ├── test_static_content.py
     │   ├── test_static_safety.py
-    │   └── e2e/
-    │       └── test_browser.py   # Playwright + Edge
+    │   ├── test_secret_sweep.py
+    │   ├── test_performance.py
+    │   └── e2e/                  # Playwright + installed Edge (research R11, R16)
+    │       ├── conftest.py
+    │       ├── test_part1a_ui.py
+    │       ├── test_part1b_ui.py
+    │       ├── test_evaluation_ui.py
+    │       ├── test_overview_ui.py
+    │       ├── test_evidence_ui.py
+    │       └── test_responsive_a11y.py
     ├── .harness/
     │   └── run.ps1               # Ruff, Bandit, Pytest API, Pytest E2E; saves evidence
     ├── evidence/

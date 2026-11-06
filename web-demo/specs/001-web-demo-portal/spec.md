@@ -6,6 +6,9 @@
 
 **Status**: Draft
 
+**Revised**: 2026-11-07 (`/speckit-analyze` remediation: FR-004, FR-013, SC-004, server-restart
+edge case, "Gemini not configured" terminology)
+
 **Input**: User description: "Build a professional, locally runnable web demonstration portal for
 BITS Pilani AI-Augmented SDLC Assignment 1 that explains the assignment, lets an evaluator
 interactively exercise the existing Part 1A tiered rate limiter and the existing Part 1B
@@ -102,7 +105,7 @@ rendered result produced by a live model call, with its raw JSON available.
 3. **Given** the submission is empty or whitespace only, **When** the evaluator submits,
    **Then** the portal refuses it with a validation message and makes no model call.
 4. **Given** the API credential is not configured, **When** the evaluator submits,
-   **Then** the portal shows a "model not configured" message and no findings.
+   **Then** the portal shows a "Gemini not configured" message and no findings.
 5. **Given** the model service returns a quota/rate-limit error, a service error, times out, or
    returns output that fails the reviewer's validation, **When** the result is shown, **Then**
    each case is labelled with its own distinct error category and is never shown as an empty
@@ -182,8 +185,11 @@ overview and methodology pages.
    limitations are listed (Part 1A: in-memory state, no sharing across processes; Part 1B: model
    variability, dataset coverage, alias-based semantic layer, service dependency).
 5. **Given** the model credential is not configured, **When** any page loads, **Then** the health
-   indicator shows the portal and Part 1A as available and Part 1B as "not configured", without
-   revealing any credential value.
+   indicator shows the portal and Part 1A as available and Part 1B as "Gemini not configured",
+   without revealing any credential value.
+6. **Given** a public repository URL has been configured, **When** the overview loads, **Then**
+   the overview and the page footer show it as a link; **Given** none is configured, **Then**
+   the footer states "Repository link not configured" instead of a broken link.
 
 ---
 
@@ -219,8 +225,9 @@ byte-for-byte identical to the file in the repository.
 - A rejected client waits exactly the advertised retry delay and tries again: the portal shows
   whatever the server returns (correct rounding is the responsibility of Part 1A and is being
   addressed in Part 1A's own SDD cycle).
-- The portal server restarts: all rate-limit state and request history are lost; the page shows
-  this as a fresh state rather than an error.
+- The portal server restarts while a page is open: server-side rate-limit state is lost; on the
+  next server response the page detects the new server instance, clears its request history and
+  says the server was restarted, rather than showing stale rows or an error.
 - Two browser tabs use the same client ID: both share the same server-side bucket.
 - Submitted code is extremely long (over 20,000 characters): refused before any model call.
 - Submitted code contains prompt-injection text or markup: treated as data; output still
@@ -247,6 +254,9 @@ byte-for-byte identical to the file in the repository.
   described as deterministic category/alias matching, not as an LLM judge.
 - **FR-003**: Each application section MUST list its problem statement, intended behaviour,
   required inputs, outputs and known limitations.
+- **FR-004**: The portal MUST show the public source-repository URL as a link in the overview and
+  footer when it is configured (changeable without code changes, accepted only as an
+  `https://github.com/<owner>/<repo>` URL), and MUST state that it is not configured otherwise.
 
 **Part 1A**
 
@@ -258,7 +268,8 @@ byte-for-byte identical to the file in the repository.
 - **FR-012**: A rejected request MUST be delivered to the browser as an actual HTTP 429 response
   with the `Retry-After` header produced by Part 1A, and the portal MUST display both.
 - **FR-013**: The portal MUST keep a visible request history (time, client ID, tier, outcome,
-  HTTP status, retry delay) for the current page session, newest first.
+  HTTP status, retry delay) for the current page session, newest first, and MUST clear it
+  automatically when a response shows that the server instance has changed (restart).
 - **FR-014**: The portal MUST show, after each request, the tier the client is actually registered
   on and the tokens remaining as reported by the limiter, and MUST warn when the selected tier
   differs from the registered tier.
@@ -280,7 +291,7 @@ byte-for-byte identical to the file in the repository.
   evidence and remediation, and MUST provide the complete raw JSON response.
 - **FR-022**: The portal MUST display the model name and the time taken for each analysis.
 - **FR-023**: The portal MUST distinguish and label these outcomes: completed with findings,
-  completed with no findings, invalid input, model not configured, quota or rate limit, service
+  completed with no findings, invalid input, Gemini not configured, quota or rate limit, service
   error, network or timeout, and invalid model output.
 - **FR-024**: Submitted code MUST NOT be executed, evaluated, imported or stored by the portal.
 - **FR-025**: All model-generated text MUST be displayed as plain text.
@@ -352,8 +363,9 @@ byte-for-byte identical to the file in the repository.
   a retry delay of at least 1 second, in 100% of repeated trials.
 - **SC-003**: 100% of request outcomes shown in the portal match the status code received from
   the server; no outcome is produced without a server response.
-- **SC-004**: When the model service is available, at least 95% of valid code submissions end in
-  a displayed result (findings or "no findings") within 60 seconds.
+- **SC-004**: In the recorded live verification of at least 10 valid code submissions made while
+  the model service is available, every submission ends within 60 seconds and at least 9 of 10
+  end in a displayed result (findings or "no findings") rather than an error.
 - **SC-005**: Zero occurrences of the API credential are found in any page asset, response body,
   response header or log captured during the test suite and manual verification.
 - **SC-006**: Every figure on the Evaluation Dashboard matches the saved report file exactly
@@ -380,5 +392,6 @@ byte-for-byte identical to the file in the repository.
   preserves earlier reports (manual live evaluation from the browser is out of scope).
 - The model service, credential and network are provided by the operator; their absence is shown
   as a classified error.
-- The public GitHub repository URL will be supplied before submission and shown in the portal.
+- The public GitHub repository URL will be supplied by the owner before submission and entered
+  in the portal's configuration file (FR-004).
 - Demonstration video recording uses a desktop browser (current Chrome or Edge).

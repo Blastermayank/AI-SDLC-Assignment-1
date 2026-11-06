@@ -24,13 +24,17 @@ General rules (all endpoints):
 ```json
 {
   "status": "ok",
+  "server_instance": "3f6c2a9e-1b7d-4e0a-9c55-0d2f7b8e4a11",
+  "repository_url": null,
   "part1a": { "available": true },
   "part1b": { "module_loaded": true, "configured": false, "model": "gemini-3.5-flash-lite" }
 }
 ```
 
 `configured` is `true` only when `GEMINI_API_KEY` is set to a non-empty value. No value or
-length of the key is returned.
+length of the key is returned. `server_instance` is a random UUID generated at server start
+(FR-013). `repository_url` comes from `web-demo/portal-config.json` and is `null` unless it
+matches `^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/?$` (FR-004).
 
 ---
 
@@ -53,6 +57,7 @@ Request: `{ "client_id": "demo-client", "tier": "free" }`
 | 422 | Invalid `client_id` or `tier` | ErrorEnvelope `invalid_input`, `fields` | — |
 
 Any other status code raised by the limiter is passed through with its own status and headers.
+Every outcome body includes `server_instance` (same value as `/api/health`).
 
 ## POST `/api/part-1a/reset` *(FR-015)*
 

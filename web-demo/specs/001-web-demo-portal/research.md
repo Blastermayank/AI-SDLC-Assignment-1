@@ -87,6 +87,10 @@ Probe results (fake client at the SDK boundary, both SDK versions):
 | Non-JSON / schema-invalid model text | `ValueError` from reviewer validation | `invalid_model_output` | 502 |
 | Another analysis running | portal lock | `busy` | 409 |
 
+- **Transport failures verified (2026-11-07)**: a real `google-genai` 2.33.0 client pointed at a
+  refused port raised `httpx.ConnectError` after 2.1 s, and at an unresolvable host after 0.0 s;
+  in both cases the exception is an `httpx.TransportError`, is not wrapped in `errors.APIError`,
+  is not retried for long, and its text does not contain the API key.
 - **Decision**: Classify by exception type and `.code`, never by parsing message text, except
   that the missing-key case is detected by checking the environment before calling the reviewer.
   Client-facing messages are fixed strings per category; SDK messages are never returned.
@@ -212,3 +216,23 @@ Probe results (fake client at the SDK boundary, both SDK versions):
   Content is returned decoded as UTF-8 without stripping a BOM, with the SHA-256 of the raw
   bytes, so byte identity is verifiable.
 - **Rationale**: ID lookup makes path traversal impossible by construction (FR-041).
+
+## R16. Browser-test console policy (added 2026-11-07, analysis finding I1)
+
+- **Finding**: A Playwright probe against Edge 156 showed that an expected `fetch` response with
+  status 429 is logged as console error `Failed to load resource: the server responded with a
+  status of 429 (Too Many Requests)`, and that a page without an icon logs a 404 for
+  `/favicon.ico`.
+- **Decision**: Browser tests fail on every `pageerror` and every console error, except
+  `Failed to load resource` messages for `/api/*` responses whose status the individual test
+  declares as expected. The page declares an SVG icon (`/static/img/icon.svg`) so no favicon 404
+  occurs.
+
+## R17. Repository link and restart detection (added 2026-11-07, analysis findings G6, U1)
+
+- **Decision**: `web-demo/portal-config.json` holds `repository_url` (null until the owner adds
+  the public GitHub URL); the server validates it and exposes it on `/api/health`. A random
+  `server_instance` UUID is created at start-up and returned by `/api/health` and every Part 1A
+  outcome; the page clears its request history when the value changes.
+- **Rationale**: Editing one JSON file needs no code change; environment variables would not
+  travel with the repository to evaluators.
