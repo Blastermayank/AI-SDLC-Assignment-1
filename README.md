@@ -42,7 +42,7 @@ Assignment-1/
 ## Prerequisites
 
 - Windows with PowerShell.
-- Python 3.10 recommended. The project was developed and verified using Python 3.10.11.
+- Python 3.13 (verified with CPython 3.13.18 on 2026-11-07). The original development on 2026-11-05/06 used Python 3.10. The pinned test tools (pytest 9.2.0) do not run on CPython 3.10.0 because of a dataclass defect in that interpreter release.
 - Internet connectivity and a valid Gemini API key for Part 1B.
 
 Part 1A and Part 1B use separate virtual environments and dependency files. Run commands from the relevant project directory.
@@ -67,7 +67,7 @@ The component accepts requests while tokens are available. When a client's bucke
 
 - **AC1:** Requests within the configured limit are accepted.
 - **AC2:** Requests exceeding the limit are rejected with HTTP 429.
-- **AC3:** Rejected requests include an appropriate `Retry-After` header.
+- **AC3:** Rejected requests include a `Retry-After` header giving the smallest whole number of seconds after which a retry is accepted (clarified 2026-11-07; see `Part-1A/speckit.specify.md`).
 - **AC4:** Rate limits are isolated by client ID.
 
 ## Installation
@@ -76,7 +76,7 @@ Open PowerShell and run:
 
 ```powershell
 Set-Location "<repository-path>\Part-1A"
-py -3.10 -m venv .venv
+py -3.13 -m venv .venv   # or: python3.13 -m venv .venv (if Python was installed with uv)
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -r requirements.txt
@@ -103,7 +103,9 @@ The harness executes:
 2. **Bandit** — static application security testing.
 3. **Pytest** — unit and acceptance-criteria tests.
 
-Each check reports its own result. The harness exits with code `0` only when all checks pass; otherwise it exits with a non-zero code.
+Each check reports its own result. The harness exits with code `0` only when all checks pass; otherwise it exits with a non-zero code. If `Part-1A\.venv` exists and no virtual environment is active, the harness uses it automatically.
+
+Every run is saved, unedited, in `Part-1A/evidence/harness-results/<UTC yyyyMMdd-HHmmss>/`: one transcript per gate (`01-ruff.txt`, `02-bandit.txt`, `03-pytest.txt`) and `summary.json` with the Python and tool versions and each gate's command, exit code and result. Tool versions are pinned in `requirements.txt` so the gates behave the same on every machine.
 
 Run the tests separately, if needed:
 
