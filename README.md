@@ -134,7 +134,7 @@ Open a separate PowerShell session and run:
 
 ```powershell
 Set-Location "<repository-path>\Part-1B"
-py -3.10 -m venv .venv
+py -3.13 -m venv .venv   # or: python3.13 -m venv .venv (if Python was installed with uv)
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -r requirements.txt

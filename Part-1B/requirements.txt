@@ -1,2 +1,3 @@
-﻿google-genai
-jsonschema
+﻿google-genai==2.33.0
+jsonschema==4.26.0
+pytest==9.2.0
