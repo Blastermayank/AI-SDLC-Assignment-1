@@ -292,7 +292,62 @@
         <section id="section-evaluation" class="view" aria-labelledby="h-evaluation" hidden>
           <p class="eyebrow">05 · Part 1B evaluation evidence</p>
           <h1 id="h-evaluation" tabindex="-1">Evaluation Dashboard</h1>
-          <!-- slot:evaluation (T039) -->
+          <p class="lead">How Part 1B's non-deterministic output is judged: a fixed evaluation dataset, three validation layers, and an aggregate score compared with a threshold declared before evaluation. Everything on this page is read from saved report files; no model is called here.</p>
+
+          <div class="card section-block">
+            <h2>How each case is scored</h2>
+            <ol class="flow" aria-label="Evaluation pipeline">
+              <li>Dataset case</li>
+              <li>Live Gemini call</li>
+              <li>Layer 1 · Schema</li>
+              <li>Layer 2 · Invariants</li>
+              <li>Layer 3 · Category match</li>
+              <li>Aggregate score</li>
+              <li>PASS or FAIL against 80%</li>
+            </ol>
+            <div class="grid-3 section-block">
+              <div>
+                <h3>Layer 1 · Structure</h3>
+                <p class="small">Valid JSON that matches the schema: required fields present, strings non-empty, severity one of High, Medium or Low.</p>
+              </div>
+              <div>
+                <h3>Layer 2 · Invariants</h3>
+                <p class="small">Rules that must always hold: the status matches the case's expected status, an error response has no findings, at most ten findings, and every evidence value is an exact excerpt of the input.</p>
+              </div>
+              <div>
+                <h3>Layer 3 · Semantic</h3>
+                <p class="small">The reported vulnerability category must match the case's expected category, allowing configured aliases ("Remote Code Execution" counts as "Code Injection"). Cases that expect "None" must have no findings. This is deterministic category/alias matching, not an LLM judge.</p>
+              </div>
+            </div>
+            <p class="small muted">A case passes only when all three layers pass. <strong>Score</strong> = passed cases ÷ completed cases × 100. A run is <strong>PASS</strong> only when every case completed and the score is at least the declared threshold of 80%. A Gemini service error stops the run as <strong>INCOMPLETE</strong>, with no final score, so outages are never counted as application failures. Each figure below is the result of one recorded run, not a general accuracy guarantee.</p>
+          </div>
+
+          <div class="card section-block">
+            <div class="card-header">
+              <h2>Saved report</h2>
+              <div class="button-row">
+                <label class="visually-hidden" for="ev-report-select">Report to display</label>
+                <select id="ev-report-select" aria-describedby="ev-source"></select>
+                <button type="button" class="btn btn-secondary btn-small" id="ev-view-latest">View latest completed run</button>
+              </div>
+            </div>
+            <div id="ev-latest" class="callout callout-warn" role="status" hidden></div>
+            <div id="ev-summary" class="tiles section-block" aria-live="polite"><p class="muted">Loading saved report…</p></div>
+            <p id="ev-source" class="hint"></p>
+            <h3 class="section-block">Cases</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Case</th><th>Type</th><th>Layer 1</th><th>Layer 2</th><th>Layer 3</th><th>Result</th><th><span class="visually-hidden">Details</span></th></tr></thead>
+                <tbody id="ev-cases"><tr class="empty-row"><td colspan="7">Loading…</td></tr></tbody>
+              </table>
+            </div>
+            <p id="ev-cases-note" class="hint" hidden></p>
+          </div>
+
+          <div class="card section-block">
+            <h2>Run history</h2>
+            <div id="ev-history"><p class="muted">Loading run history…</p></div>
+          </div>
         </section>
 
         <section id="section-evidence" class="view" aria-labelledby="h-evidence" hidden>

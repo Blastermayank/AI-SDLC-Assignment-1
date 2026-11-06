@@ -308,14 +308,19 @@ byte-for-byte identical to the file in the repository.
 - **FR-030**: The dashboard MUST read the current saved evaluation report and the evaluation
   dataset read-only and display model, threshold, total, completed and passed cases, aggregate
   score, final status (PASS, FAIL or INCOMPLETE), and per-case Layer 1/2/3 outcomes with input,
-  expected category, model output and failure explanation, for any number of cases.
+  expected category, model output and failure explanation, for any number of cases. The same
+  view MAY display any preserved earlier report; case inputs and expected categories are shown
+  only for the current report (research R13). When the current report is INCOMPLETE, the
+  dashboard MUST say so and offer the latest completed run (revised 2026-11-07, after both live
+  runs on the 16-case dataset were stopped by Gemini service errors).
 - **FR-031**: The dashboard MUST state that the figures are from one recorded run and explain the
   scoring method (passed cases divided by completed cases, PASS only when all cases complete and
   the score is at least the threshold).
 - **FR-032**: The dashboard MUST NOT trigger model calls or modify any saved report.
 - **FR-033**: The dashboard MUST list every preserved earlier evaluation report in time order
-  (timestamp, completed and passed counts, score, status, failed case IDs) under a caveat that
-  dataset, prompt and evaluator versions changed between runs.
+  (timestamp, completed and passed counts, score, status, failed case IDs, and separately the
+  case IDs interrupted by a service error) under a caveat that dataset, prompt and evaluator
+  versions changed between runs.
 
 **Evidence**
 

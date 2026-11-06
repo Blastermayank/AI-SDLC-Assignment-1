@@ -18,7 +18,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from app.backends import load_backends
 from app.config import Settings
 from app.errors import register_error_handlers
-from app.routes import health, part1a, part1b
+from app.routes import evaluation, health, part1a, part1b
 from app.security import (
     BodySizeLimitMiddleware,
     InternalErrorMiddleware,
@@ -75,6 +75,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health.router)
     app.include_router(part1a.router)
     app.include_router(part1b.router)
+    app.include_router(evaluation.router)
 
     app.mount("/static", StaticFiles(directory=settings.static_dir), name="static")
 

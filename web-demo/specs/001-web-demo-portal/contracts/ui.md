@@ -58,6 +58,9 @@ active. A `<noscript>` message explains that interactive demonstrations need Jav
 
 | Element | Behaviour |
 |---|---|
+| `#ev-report-select` | Chooses the displayed report (default: current) |
+| `#ev-view-latest` | Shows the latest completed (PASS or FAIL) run |
+| `#ev-latest` | Visible when the current report is INCOMPLETE; names the latest completed run |
 | `#ev-summary` | Model, total, completed, passed, score (1 decimal), threshold, status badge |
 | `#ev-cases` (table body) | One row per case: id, type, L1, L2, L3, result; expandable detail with input, expected, model output, explanation |
 | `#ev-history` | Run history table with caveat text |

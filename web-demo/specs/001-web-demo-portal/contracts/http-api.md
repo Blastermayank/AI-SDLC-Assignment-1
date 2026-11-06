@@ -128,6 +128,11 @@ Request: `{ "code": "query = f'SELECT * FROM users WHERE id = {user_id}'" }`
 404 `report_unavailable` if the file is missing or not valid JSON. Read-only: no model call, no
 file write.
 
+Optional query `?report=<file name>` (revised 2026-11-07) displays a preserved earlier report.
+Only names matching `^eval-results(-run-\d+-[A-Za-z0-9.]+)?\.json$` that exist in
+`Part-1B/evidence/` are accepted; anything else returns 404 `not_found`. The response adds
+`file`, `is_current`, and `cases_note`; `cases` is `null` for earlier reports.
+
 ## GET `/api/part-1b/evaluation/history` *(FR-033)*
 
 200:
@@ -142,7 +147,10 @@ file write.
 ```
 
 Sorted ascending by `timestamp_utc`; includes the current report with `is_current: true`.
-Unreadable files are listed with `status: "UNREADABLE"` rather than dropped.
+Unreadable files are listed with `status: "UNREADABLE"` rather than dropped. Each run also has
+`partial_score`, `interrupted_case_ids` (cases stopped by a service or execution error, kept
+separate from `failed_case_ids`), `service_error` (boolean) and `dataset_sha256` (or null). The
+response adds `latest_completed`: the newest run whose status is PASS or FAIL.
 
 ---
 

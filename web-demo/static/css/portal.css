@@ -327,6 +327,7 @@ a.chip:hover { border-color: var(--accent); color: var(--accent); }
 .tile-value { font-size: 1.45rem; font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .case-row td { white-space: nowrap; }
 .case-row.is-failed td:first-child { box-shadow: inset 4px 0 0 var(--fail); }
+.case-row.is-interrupted td:first-child { box-shadow: inset 4px 0 0 var(--warn); }
 .case-detail td { background: var(--surface-2); white-space: normal; }
 
 /* ---------- Evidence ---------- */
