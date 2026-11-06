@@ -185,10 +185,12 @@ From the `Part-1B` directory:
 python .\.harness\evaluate.py
 ```
 
-The evaluator reads the 15-case dataset at `evals/dataset.json` and writes its report to `evidence/eval-results.json`. A new evaluation run overwrites that report. Preserve the current report before running another evaluation if you need to retain it:
+The evaluator reads the dataset at `evals/dataset.json` (16 cases since 2026-11-07) and writes its report to `evidence/eval-results.json`. Before writing, it automatically archives the previous report as `evidence/eval-results-run-<N>-<score>pct.json` (or `-incomplete`), so no run overwrites an earlier result. Each report records the SHA-256 of the dataset's canonical JSON content. A full run makes one live Gemini call per case, except for the blank-input case 16, which needs no call.
+
+Run the evaluator's unit tests (no network, no API key needed):
 
 ```powershell
-Copy-Item ".\evidence\eval-results.json" ".\evidence\eval-results-backup-$(Get-Date -Format 'yyyyMMdd-HHmmss').json"
+python -m pytest tests -v
 ```
 
 ### Three-layer evaluation
@@ -203,7 +205,7 @@ The evaluation pipeline is:
 
 **Layer 2 — Invariants and guardrails**
 
-- Check consistency between response status and findings.
+- Check consistency between response status and findings, and that the status matches the case's expected status (`success`, or `error` for the blank-input case).
 - Enforce severity restrictions and the finding-count limit.
 - Confirm that each evidence value is an exact excerpt from the supplied source.
 
@@ -217,7 +219,9 @@ Layer 3 currently uses deterministic category/alias matching. It is not an indep
 
 ### Passing threshold and saved result
 
-The configured aggregate passing threshold is **80%**. The saved final evaluation report records:
+The configured aggregate passing threshold is **80%**.
+
+**Latest completed evaluation** (run 6, `evidence/eval-results-run-6-86.7pct.json`, 2026-11-06, 15-case dataset):
 
 | Metric | Saved result |
 |---|---:|
@@ -229,7 +233,9 @@ The configured aggregate passing threshold is **80%**. The saved final evaluatio
 | Threshold | 80% |
 | Status | PASS |
 
-Cases 3 and 8 failed the semantic layer in this particular saved run. This is a result from one evaluation run on the 15-case dataset, not a general accuracy guarantee. Model outputs and scores may vary between runs.
+Cases 3 and 8 failed the semantic layer in this run. It is the result of one evaluation run on the 15-case dataset, not a general accuracy guarantee. Model outputs and scores may vary between runs.
+
+**16-case dataset (since 2026-11-07):** no completed evaluation yet. Both runs on 2026-11-07 were stopped by Gemini `503 UNAVAILABLE` ("model is currently experiencing high demand") service errors and are recorded as `INCOMPLETE`, not as passes or failures. The first got 14 of 16 cases through, with 12 passed (partial score 85.7%, not final); the second stopped on case 1. See `Part-1B/evidence/README.md` for every saved run.
 
 ---
 
@@ -260,7 +266,8 @@ Historical reports document outcomes observed during development. Since the mode
 
 - Inference depends on Gemini API availability, network connectivity, and a valid API credential.
 - Model responses may vary between runs.
-- The 15-case dataset cannot represent every vulnerability, language, or application context.
+- The 16-case dataset cannot represent every vulnerability, language, or application context.
+- The 16-case dataset has no completed evaluation yet (Gemini service errors on 2026-11-07).
 - Semantic evaluation uses category aliases rather than an independent semantic judge.
 - Passing the 80% threshold does not establish production-grade security-review reliability.
 
