@@ -353,7 +353,36 @@
         <section id="section-evidence" class="view" aria-labelledby="h-evidence" hidden>
           <p class="eyebrow">06 · Specifications, source and results</p>
           <h1 id="h-evidence" tabindex="-1">Engineering Evidence</h1>
-          <!-- slot:evidence (T050) -->
+          <p class="lead">The specifications, source code, harnesses, datasets, saved reports and run outputs behind both applications. Every file is shown exactly as stored in the repository, with its size and SHA-256 fingerprint so it can be checked independently.</p>
+
+          <div class="grid-3 section-block">
+            <div class="card">
+              <h3>Assignment evidence</h3>
+              <p class="small muted">Part 1A and Part 1B: Spec Kit artifacts, source, tests, harnesses, snapshots, datasets, evaluation reports and the student's harness logs.</p>
+            </div>
+            <div class="card">
+              <h3>Web portal artifacts</h3>
+              <p class="small muted">This portal's own constitution, specification, plan, research, contracts and tasks. They are kept separate from Part 1A and Part 1B.</p>
+            </div>
+            <div class="card">
+              <h3>Verification results</h3>
+              <p class="small muted">Unedited outputs of saved harness runs, unit-test runs and evaluator consoles, named by their UTC start time.</p>
+            </div>
+          </div>
+
+          <div class="evidence-layout section-block">
+            <div class="card">
+              <div class="field">
+                <label for="evd-filter">Filter files</label>
+                <input type="text" id="evd-filter" placeholder="e.g. limiter, dataset, spec" autocomplete="off" spellcheck="false">
+              </div>
+              <div id="evd-groups" class="section-block"><p class="muted">Loading evidence index…</p></div>
+            </div>
+            <div class="card" id="evd-viewer" aria-live="polite">
+              <h2>Viewer</h2>
+              <p class="muted">Select a file to view its exact content.</p>
+            </div>
+          </div>
         </section>
       </main>
 
