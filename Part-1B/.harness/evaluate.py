@@ -190,8 +190,15 @@ def invariant_check(output, source_code, expected_status="success"):
 
 
 def dataset_fingerprint(path):
-    """SHA-256 of the dataset file's bytes, recorded in every report (Section 7)."""
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    """SHA-256 of the dataset's canonical JSON content, recorded in every report (Section 7).
+
+    Sorted keys, compact separators and UTF-8 make the value independent of
+    line endings and a byte-order mark, so every checkout of the same dataset
+    produces the same fingerprint.
+    """
+    data = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    canonical = json.dumps(data, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 ARCHIVE_NAME = re.compile(r"^eval-results-run-(\d+)-")
