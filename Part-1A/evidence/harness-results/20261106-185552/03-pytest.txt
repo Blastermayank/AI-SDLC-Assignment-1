@@ -1,0 +1,311 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0 -- E:\Mtech Assignment\AI_SDLC\Assignment-1\Part-1A\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: E:\Mtech Assignment\AI_SDLC\Assignment-1\Part-1A
+plugins: anyio-4.16.0
+collecting ... collected 15 items
+
+tests/test_limiter.py::test_ac1_ac2_limits_and_rejection PASSED          [  6%]
+tests/test_limiter.py::test_ac3_retry_headers PASSED                     [ 13%]
+tests/test_limiter.py::test_ac4_client_isolation PASSED                  [ 20%]
+tests/test_limiter.py::test_ac1_ac2_spec_capacity_per_tier[free] PASSED  [ 26%]
+tests/test_limiter.py::test_ac1_ac2_spec_capacity_per_tier[standard] PASSED [ 33%]
+tests/test_limiter.py::test_ac1_ac2_spec_capacity_per_tier[premium] PASSED [ 40%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[free-0.0] PASSED [ 46%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[free-0.01] FAILED [ 53%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[free-0.25] FAILED [ 60%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[standard-0.0] PASSED [ 66%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[standard-0.01] FAILED [ 73%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[standard-0.25] PASSED [ 80%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[premium-0.0] PASSED [ 86%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[premium-0.01] PASSED [ 93%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[premium-0.25] PASSED [100%]
+
+================================== FAILURES ===================================
+_________ test_ac3_retry_after_is_smallest_sufficient_wait[free-0.01] _________
+
+tier = 'free', gap = 0.01
+clock = <test_limiter.FakeClock object at 0x00000178A80CDBA0>
+
+    @pytest.mark.parametrize("gap", [0.0, 0.01, 0.25])
+    @pytest.mark.parametrize("tier", ["free", "standard", "premium"])
+    def test_ac3_retry_after_is_smallest_sufficient_wait(tier, gap, clock):
+        limiter = RateLimiter()
+        rejection = _send_until_rejected(limiter, "retry-client", tier, clock, gap)
+    
+        retry_after = rejection.headers["Retry-After"]
+        assert retry_after.isdigit() and int(retry_after) >= 1, (
+            f"Retry-After must be a positive whole number of seconds, got {retry_after!r}"
+        )
+        wait = int(retry_after)
+    
+        if wait > 1:
+            # One second earlier than advertised is still too early.
+            clock.advance(wait - 1)
+            with pytest.raises(HTTPException):
+                limiter.check_request("retry-client", tier)
+            clock.advance(1)
+        else:
+            clock.advance(wait)
+    
+        # A client that waits exactly the advertised time must be accepted.
+        try:
+>           accepted = limiter.check_request("retry-client", tier)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_limiter.py:115: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <src.limiter.RateLimiter object at 0x00000178A8062E00>
+client_id = 'retry-client', tier = 'free'
+
+    def check_request(self, client_id: str, tier: str = "free"):
+        if client_id not in self.clients:
+            if tier not in TIERS:
+                tier = "free"
+            config = TIERS[tier]
+            self.clients[client_id] = TokenBucket(config["capacity"], config["refill_rate"])
+    
+        bucket = self.clients[client_id]
+        if not bucket.consume(1):
+            retry_after = str(bucket.time_until_next_token())
+>           raise HTTPException(
+                status_code=429,
+                detail="Too Many Requests",
+                headers={"Retry-After": retry_after}
+            )
+E           fastapi.exceptions.HTTPException: 429: Too Many Requests
+
+src\limiter.py:51: HTTPException
+
+During handling of the above exception, another exception occurred:
+
+tier = 'free', gap = 0.01
+clock = <test_limiter.FakeClock object at 0x00000178A80CDBA0>
+
+    @pytest.mark.parametrize("gap", [0.0, 0.01, 0.25])
+    @pytest.mark.parametrize("tier", ["free", "standard", "premium"])
+    def test_ac3_retry_after_is_smallest_sufficient_wait(tier, gap, clock):
+        limiter = RateLimiter()
+        rejection = _send_until_rejected(limiter, "retry-client", tier, clock, gap)
+    
+        retry_after = rejection.headers["Retry-After"]
+        assert retry_after.isdigit() and int(retry_after) >= 1, (
+            f"Retry-After must be a positive whole number of seconds, got {retry_after!r}"
+        )
+        wait = int(retry_after)
+    
+        if wait > 1:
+            # One second earlier than advertised is still too early.
+            clock.advance(wait - 1)
+            with pytest.raises(HTTPException):
+                limiter.check_request("retry-client", tier)
+            clock.advance(1)
+        else:
+            clock.advance(wait)
+    
+        # A client that waits exactly the advertised time must be accepted.
+        try:
+            accepted = limiter.check_request("retry-client", tier)
+        except HTTPException as exc:
+>           pytest.fail(
+                f"Expected acceptance after waiting the advertised Retry-After of {wait}s "
+                f"({tier} tier, {gap}s between requests); observed HTTP {exc.status_code} "
+                f"with a new Retry-After of {exc.headers.get('Retry-After')}s."
+            )
+E           Failed: Expected acceptance after waiting the advertised Retry-After of 11s (free tier, 0.01s between requests); observed HTTP 429 with a new Retry-After of 1s.
+
+tests\test_limiter.py:117: Failed
+_________ test_ac3_retry_after_is_smallest_sufficient_wait[free-0.25] _________
+
+tier = 'free', gap = 0.25
+clock = <test_limiter.FakeClock object at 0x00000178A805B1D0>
+
+    @pytest.mark.parametrize("gap", [0.0, 0.01, 0.25])
+    @pytest.mark.parametrize("tier", ["free", "standard", "premium"])
+    def test_ac3_retry_after_is_smallest_sufficient_wait(tier, gap, clock):
+        limiter = RateLimiter()
+        rejection = _send_until_rejected(limiter, "retry-client", tier, clock, gap)
+    
+        retry_after = rejection.headers["Retry-After"]
+        assert retry_after.isdigit() and int(retry_after) >= 1, (
+            f"Retry-After must be a positive whole number of seconds, got {retry_after!r}"
+        )
+        wait = int(retry_after)
+    
+        if wait > 1:
+            # One second earlier than advertised is still too early.
+            clock.advance(wait - 1)
+            with pytest.raises(HTTPException):
+                limiter.check_request("retry-client", tier)
+            clock.advance(1)
+        else:
+            clock.advance(wait)
+    
+        # A client that waits exactly the advertised time must be accepted.
+        try:
+>           accepted = limiter.check_request("retry-client", tier)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_limiter.py:115: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <src.limiter.RateLimiter object at 0x00000178A804F750>
+client_id = 'retry-client', tier = 'free'
+
+    def check_request(self, client_id: str, tier: str = "free"):
+        if client_id not in self.clients:
+            if tier not in TIERS:
+                tier = "free"
+            config = TIERS[tier]
+            self.clients[client_id] = TokenBucket(config["capacity"], config["refill_rate"])
+    
+        bucket = self.clients[client_id]
+        if not bucket.consume(1):
+            retry_after = str(bucket.time_until_next_token())
+>           raise HTTPException(
+                status_code=429,
+                detail="Too Many Requests",
+                headers={"Retry-After": retry_after}
+            )
+E           fastapi.exceptions.HTTPException: 429: Too Many Requests
+
+src\limiter.py:51: HTTPException
+
+During handling of the above exception, another exception occurred:
+
+tier = 'free', gap = 0.25
+clock = <test_limiter.FakeClock object at 0x00000178A805B1D0>
+
+    @pytest.mark.parametrize("gap", [0.0, 0.01, 0.25])
+    @pytest.mark.parametrize("tier", ["free", "standard", "premium"])
+    def test_ac3_retry_after_is_smallest_sufficient_wait(tier, gap, clock):
+        limiter = RateLimiter()
+        rejection = _send_until_rejected(limiter, "retry-client", tier, clock, gap)
+    
+        retry_after = rejection.headers["Retry-After"]
+        assert retry_after.isdigit() and int(retry_after) >= 1, (
+            f"Retry-After must be a positive whole number of seconds, got {retry_after!r}"
+        )
+        wait = int(retry_after)
+    
+        if wait > 1:
+            # One second earlier than advertised is still too early.
+            clock.advance(wait - 1)
+            with pytest.raises(HTTPException):
+                limiter.check_request("retry-client", tier)
+            clock.advance(1)
+        else:
+            clock.advance(wait)
+    
+        # A client that waits exactly the advertised time must be accepted.
+        try:
+            accepted = limiter.check_request("retry-client", tier)
+        except HTTPException as exc:
+>           pytest.fail(
+                f"Expected acceptance after waiting the advertised Retry-After of {wait}s "
+                f"({tier} tier, {gap}s between requests); observed HTTP {exc.status_code} "
+                f"with a new Retry-After of {exc.headers.get('Retry-After')}s."
+            )
+E           Failed: Expected acceptance after waiting the advertised Retry-After of 10s (free tier, 0.25s between requests); observed HTTP 429 with a new Retry-After of 1s.
+
+tests\test_limiter.py:117: Failed
+_______ test_ac3_retry_after_is_smallest_sufficient_wait[standard-0.01] _______
+
+tier = 'standard', gap = 0.01
+clock = <test_limiter.FakeClock object at 0x00000178A80629C0>
+
+    @pytest.mark.parametrize("gap", [0.0, 0.01, 0.25])
+    @pytest.mark.parametrize("tier", ["free", "standard", "premium"])
+    def test_ac3_retry_after_is_smallest_sufficient_wait(tier, gap, clock):
+        limiter = RateLimiter()
+        rejection = _send_until_rejected(limiter, "retry-client", tier, clock, gap)
+    
+        retry_after = rejection.headers["Retry-After"]
+        assert retry_after.isdigit() and int(retry_after) >= 1, (
+            f"Retry-After must be a positive whole number of seconds, got {retry_after!r}"
+        )
+        wait = int(retry_after)
+    
+        if wait > 1:
+            # One second earlier than advertised is still too early.
+            clock.advance(wait - 1)
+            with pytest.raises(HTTPException):
+                limiter.check_request("retry-client", tier)
+            clock.advance(1)
+        else:
+            clock.advance(wait)
+    
+        # A client that waits exactly the advertised time must be accepted.
+        try:
+>           accepted = limiter.check_request("retry-client", tier)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_limiter.py:115: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <src.limiter.RateLimiter object at 0x00000178A81258B0>
+client_id = 'retry-client', tier = 'standard'
+
+    def check_request(self, client_id: str, tier: str = "free"):
+        if client_id not in self.clients:
+            if tier not in TIERS:
+                tier = "free"
+            config = TIERS[tier]
+            self.clients[client_id] = TokenBucket(config["capacity"], config["refill_rate"])
+    
+        bucket = self.clients[client_id]
+        if not bucket.consume(1):
+            retry_after = str(bucket.time_until_next_token())
+>           raise HTTPException(
+                status_code=429,
+                detail="Too Many Requests",
+                headers={"Retry-After": retry_after}
+            )
+E           fastapi.exceptions.HTTPException: 429: Too Many Requests
+
+src\limiter.py:51: HTTPException
+
+During handling of the above exception, another exception occurred:
+
+tier = 'standard', gap = 0.01
+clock = <test_limiter.FakeClock object at 0x00000178A80629C0>
+
+    @pytest.mark.parametrize("gap", [0.0, 0.01, 0.25])
+    @pytest.mark.parametrize("tier", ["free", "standard", "premium"])
+    def test_ac3_retry_after_is_smallest_sufficient_wait(tier, gap, clock):
+        limiter = RateLimiter()
+        rejection = _send_until_rejected(limiter, "retry-client", tier, clock, gap)
+    
+        retry_after = rejection.headers["Retry-After"]
+        assert retry_after.isdigit() and int(retry_after) >= 1, (
+            f"Retry-After must be a positive whole number of seconds, got {retry_after!r}"
+        )
+        wait = int(retry_after)
+    
+        if wait > 1:
+            # One second earlier than advertised is still too early.
+            clock.advance(wait - 1)
+            with pytest.raises(HTTPException):
+                limiter.check_request("retry-client", tier)
+            clock.advance(1)
+        else:
+            clock.advance(wait)
+    
+        # A client that waits exactly the advertised time must be accepted.
+        try:
+            accepted = limiter.check_request("retry-client", tier)
+        except HTTPException as exc:
+>           pytest.fail(
+                f"Expected acceptance after waiting the advertised Retry-After of {wait}s "
+                f"({tier} tier, {gap}s between requests); observed HTTP {exc.status_code} "
+                f"with a new Retry-After of {exc.headers.get('Retry-After')}s."
+            )
+E           Failed: Expected acceptance after waiting the advertised Retry-After of 2s (standard tier, 0.01s between requests); observed HTTP 429 with a new Retry-After of 1s.
+
+tests\test_limiter.py:117: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[free-0.01]
+FAILED tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[free-0.25]
+FAILED tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[standard-0.01]
+======================== 3 failed, 12 passed in 0.68s =========================

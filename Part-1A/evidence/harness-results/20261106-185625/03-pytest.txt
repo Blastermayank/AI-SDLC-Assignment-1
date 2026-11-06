@@ -1,0 +1,24 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0 -- E:\Mtech Assignment\AI_SDLC\Assignment-1\Part-1A\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: E:\Mtech Assignment\AI_SDLC\Assignment-1\Part-1A
+plugins: anyio-4.16.0
+collecting ... collected 15 items
+
+tests/test_limiter.py::test_ac1_ac2_limits_and_rejection PASSED          [  6%]
+tests/test_limiter.py::test_ac3_retry_headers PASSED                     [ 13%]
+tests/test_limiter.py::test_ac4_client_isolation PASSED                  [ 20%]
+tests/test_limiter.py::test_ac1_ac2_spec_capacity_per_tier[free] PASSED  [ 26%]
+tests/test_limiter.py::test_ac1_ac2_spec_capacity_per_tier[standard] PASSED [ 33%]
+tests/test_limiter.py::test_ac1_ac2_spec_capacity_per_tier[premium] PASSED [ 40%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[free-0.0] PASSED [ 46%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[free-0.01] PASSED [ 53%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[free-0.25] PASSED [ 60%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[standard-0.0] PASSED [ 66%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[standard-0.01] PASSED [ 73%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[standard-0.25] PASSED [ 80%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[premium-0.0] PASSED [ 86%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[premium-0.01] PASSED [ 93%]
+tests/test_limiter.py::test_ac3_retry_after_is_smallest_sufficient_wait[premium-0.25] PASSED [100%]
+
+============================= 15 passed in 0.44s ==============================
