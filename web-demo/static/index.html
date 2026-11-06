@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Assignment 1 Portal</title>
+  <meta name="description" content="Specification-driven development and harness engineering: a deterministic rate limiter and a Gemini-powered security code reviewer, with their validation evidence.">
+  <link rel="icon" href="/static/img/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/portal.css">
+  <script type="module" src="/static/js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="Portal navigation">
+      <div class="brand">
+        <img src="/static/img/icon.svg" alt="" width="34" height="34">
+        <div>
+          <div class="brand-title">Assignment 1</div>
+          <div class="brand-subtitle">SDD &amp; Harness Engineering</div>
+        </div>
+      </div>
+      <nav aria-label="Sections">
+        <ol class="nav-list">
+          <li><a href="#overview" data-route="overview"><span class="nav-index">01</span>Project Overview</a></li>
+          <li><a href="#methodology" data-route="methodology"><span class="nav-index">02</span>Assignment Methodology</a></li>
+          <li><a href="#part-1a" data-route="part-1a"><span class="nav-index">03</span>Part 1A: Rate Limiter</a></li>
+          <li><a href="#part-1b" data-route="part-1b"><span class="nav-index">04</span>Part 1B: AI Code Reviewer</a></li>
+          <li><a href="#evaluation" data-route="evaluation"><span class="nav-index">05</span>Evaluation Dashboard</a></li>
+          <li><a href="#evidence" data-route="evidence"><span class="nav-index">06</span>Engineering Evidence</a></li>
+        </ol>
+      </nav>
+      <div class="sidebar-foot">
+        <div>BITS Pilani · AI-Augmented SDLC</div>
+        <div>SE ZG534 · Assignment 1</div>
+      </div>
+    </aside>
+
+    <div class="main-column">
+      <header class="topbar">
+        <button type="button" class="btn btn-secondary nav-toggle" id="nav-toggle" aria-controls="sidebar" aria-expanded="false">Menu</button>
+        <div class="topbar-title" id="topbar-title">Project Overview</div>
+        <div class="topbar-actions">
+          <span id="health-badge" class="badge badge-neutral" role="status" aria-live="polite">Checking status…</span>
+          <button type="button" class="btn btn-secondary" id="theme-toggle">Theme</button>
+        </div>
+      </header>
+
+      <main id="main" tabindex="-1">
+        <noscript>
+          <div class="callout callout-warn">The interactive demonstrations need JavaScript. Please enable JavaScript and reload the page.</div>
+        </noscript>
+
+        <section id="section-overview" class="view" aria-labelledby="h-overview">
+          <p class="eyebrow">01 · Project Overview</p>
+          <h1 id="h-overview" tabindex="-1">Project Overview</h1>
+          <!-- slot:overview (T043) -->
+        </section>
+
+        <section id="section-methodology" class="view" aria-labelledby="h-methodology" hidden>
+          <p class="eyebrow">02 · Assignment Methodology</p>
+          <h1 id="h-methodology" tabindex="-1">Assignment Methodology</h1>
+          <!-- slot:methodology (T044) -->
+        </section>
+
+        <section id="section-part-1a" class="view" aria-labelledby="h-part-1a" hidden>
+          <p class="eyebrow">03 · Part 1A · Deterministic application</p>
+          <h1 id="h-part-1a" tabindex="-1">Part 1A: Tiered Rate Limiter</h1>
+          <!-- slot:part-1a (T027) -->
+        </section>
+
+        <section id="section-part-1b" class="view" aria-labelledby="h-part-1b" hidden>
+          <p class="eyebrow">04 · Part 1B · Non-deterministic AI application</p>
+          <h1 id="h-part-1b" tabindex="-1">Part 1B: AI Security Code Reviewer</h1>
+          <!-- slot:part-1b (T033) -->
+        </section>
+
+        <section id="section-evaluation" class="view" aria-labelledby="h-evaluation" hidden>
+          <p class="eyebrow">05 · Part 1B evaluation evidence</p>
+          <h1 id="h-evaluation" tabindex="-1">Evaluation Dashboard</h1>
+          <!-- slot:evaluation (T039) -->
+        </section>
+
+        <section id="section-evidence" class="view" aria-labelledby="h-evidence" hidden>
+          <p class="eyebrow">06 · Specifications, source and results</p>
+          <h1 id="h-evidence" tabindex="-1">Engineering Evidence</h1>
+          <!-- slot:evidence (T050) -->
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div>Presentation layer for Assignment 1. Part 1A and Part 1B code and evidence are used as they are, never modified by this portal.</div>
+        <div>Source repository: <span id="repo-link">Repository link not configured</span></div>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

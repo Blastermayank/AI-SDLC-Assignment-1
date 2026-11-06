@@ -1,0 +1,24 @@
+# Tool configuration for the web demonstration portal (web-demo/ only).
+# Part-1A and Part-1B keep their own harness configuration.
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = [".specify", ".claude", "specs"]
+
+[tool.ruff.lint]
+# Explicit rule selection so results do not depend on Ruff's default rule set.
+select = ["E", "W", "F", "I", "UP", "B", "S", "SIM", "C4", "PT", "RUF", "PL"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests use assert statements and literal expected values by design.
+"tests/**" = ["S101", "PLR2004"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-p no:cacheprovider"
+markers = ["e2e: browser tests (Playwright driving the installed Microsoft Edge)"]
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]
