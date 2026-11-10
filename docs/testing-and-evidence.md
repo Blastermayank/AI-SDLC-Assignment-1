@@ -145,7 +145,22 @@ the code, a recorded failure, the repair, and a recorded pass.
 - **History:** `git log --oneline -- Part-1A` and `git log --oneline -- Part-1B` list every
   change in order. Evidence commits contain the saved files unchanged.
 
-## 7. Rules followed
+## 7. Fresh-clone check of the instructions (2026-11-11)
+
+To confirm the README instructions work as written, the repository (commit `3f0254b`) was
+cloned into an empty folder and the documented steps were followed in Windows PowerShell 5.1
+with Python 3.13.18:
+
+| Part | Steps followed | Outcome |
+|---|---|---|
+| Part 1A | README "Installation", then "Run the Part 1A harness" and the separate test command | Harness PASS (Ruff, Bandit, Pytest); 15 tests passed |
+| Part 1B | README "Installation", key check, "Run a sample analysis" (one live Gemini call), unit tests, the fingerprint command above | Sample returned a schema-valid SQL Injection finding; 23 tests passed; fingerprint `f9e71665…` |
+| Web portal | `start.ps1` (created its own virtual environment), then `requirements-dev.txt` and the portal harness | Portal answered on `/api/health`; harness PASS (177 API, 36 browser tests) |
+
+The full Part 1B evaluation was not run in this check: it makes 16 live calls, and its next
+run is reserved as the recorded result for the 16-case dataset.
+
+## 8. Rules followed
 
 From the assignment and the projects' constitutions: no difficult test or dataset case was
 removed; the 80% threshold was not changed; no validation layer was disabled; specification
