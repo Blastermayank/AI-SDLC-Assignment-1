@@ -47,6 +47,17 @@ Assignment-1/
 
 Part 1A and Part 1B use separate virtual environments and dependency files. Run commands from the relevant project directory.
 
+## Web demonstration portal
+
+The `web-demo/` folder contains a local web page that explains both projects and runs them live: send requests through the Part 1A rate limiter, submit code to the Part 1B Gemini reviewer, view the saved Part 1B evaluation results, and browse the engineering evidence. It is a presentation layer only: it loads `Part-1A/src/limiter.py` and `Part-1B/.harness/evaluate.py` unchanged and never modifies Part 1A or Part 1B.
+
+```powershell
+cd web-demo
+powershell -NoProfile -ExecutionPolicy Bypass -File .\start.ps1
+```
+
+The portal opens at `http://127.0.0.1:8000`. Setup, the portal's own harness, security notes and troubleshooting are in [web-demo/README.md](web-demo/README.md). It was built with GitHub Spec Kit; its specification, plan and tasks are in `web-demo/specs/001-web-demo-portal/`.
+
 ---
 
 # Part 1A — Tiered Rate Limiter

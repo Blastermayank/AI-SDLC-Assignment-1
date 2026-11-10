@@ -1,0 +1,42 @@
+{
+    "harness":  "web-demo",
+    "timestamp_utc":  "2026-11-10T18:50:30Z",
+    "python":  "3.13.18",
+    "tools":  {
+                  "ruff":  "0.17.4",
+                  "bandit":  "1.9.4",
+                  "pytest":  "9.2.0",
+                  "playwright":  "1.64.1"
+              },
+    "gates":  [
+                  {
+                      "name":  "SYNTAX \u0026 LINT GUARD (RUFF)",
+                      "command":  "ruff check app tests",
+                      "exit_code":  0,
+                      "result":  "PASS",
+                      "transcript":  "01-ruff.txt"
+                  },
+                  {
+                      "name":  "SECURITY / SAST GUARD (BANDIT)",
+                      "command":  "bandit -r app -ll -c pyproject.toml",
+                      "exit_code":  0,
+                      "result":  "PASS",
+                      "transcript":  "02-bandit.txt"
+                  },
+                  {
+                      "name":  "API \u0026 CONTRACT TESTS (PYTEST)",
+                      "command":  "python -m pytest -m \"not e2e\" -v",
+                      "exit_code":  0,
+                      "result":  "PASS",
+                      "transcript":  "03-pytest-api.txt"
+                  },
+                  {
+                      "name":  "BROWSER E2E TESTS (PLAYWRIGHT)",
+                      "command":  "python -m pytest -m e2e -v",
+                      "exit_code":  0,
+                      "result":  "PASS",
+                      "transcript":  "04-pytest-e2e.txt"
+                  }
+              ],
+    "result":  "PASS"
+}

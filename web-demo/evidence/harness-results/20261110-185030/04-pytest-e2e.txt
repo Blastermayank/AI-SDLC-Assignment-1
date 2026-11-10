@@ -1,0 +1,46 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0 -- E:\Mtech Assignment\AI_SDLC\Assignment-1\web-demo\.venv\Scripts\python.exe
+rootdir: E:\Mtech Assignment\AI_SDLC\Assignment-1\web-demo
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.16.0
+collecting ... collected 213 items / 177 deselected / 36 selected
+
+tests/e2e/test_evaluation_ui.py::test_current_report_summary_matches_file PASSED [  2%]
+tests/e2e/test_evaluation_ui.py::test_history_lists_every_saved_report_with_caveat PASSED [  5%]
+tests/e2e/test_evaluation_ui.py::test_reference_run_shows_86_7_and_cases_3_and_8 PASSED [  8%]
+tests/e2e/test_evaluation_ui.py::test_latest_completed_run_shortcut PASSED [ 11%]
+tests/e2e/test_evidence_ui.py::test_three_groups_are_shown PASSED        [ 13%]
+tests/e2e/test_evidence_ui.py::test_dataset_opens_with_metadata_and_literal_markup PASSED [ 16%]
+tests/e2e/test_evidence_ui.py::test_filter_narrows_the_list PASSED       [ 19%]
+tests/e2e/test_overview_ui.py::test_default_route_shows_only_overview PASSED [ 22%]
+tests/e2e/test_overview_ui.py::test_navigation_switches_sections PASSED  [ 25%]
+tests/e2e/test_overview_ui.py::test_health_badge_reports_missing_key PASSED [ 27%]
+tests/e2e/test_overview_ui.py::test_repository_link_states PASSED        [ 30%]
+tests/e2e/test_overview_ui.py::test_methodology_marks_missing_and_links_present_artifacts PASSED [ 33%]
+tests/e2e/test_part1a_ui.py::test_tier_table_lists_three_tiers PASSED    [ 36%]
+tests/e2e/test_part1a_ui.py::test_five_accepted_then_rejected_with_retry_after PASSED [ 38%]
+tests/e2e/test_part1a_ui.py::test_tier_mismatch_warning PASSED           [ 41%]
+tests/e2e/test_part1a_ui.py::test_reset_clears_history PASSED            [ 44%]
+tests/e2e/test_part1a_ui.py::test_invalid_client_id_shows_server_validation PASSED [ 47%]
+tests/e2e/test_part1a_ui.py::test_server_restart_clears_stale_history PASSED [ 50%]
+tests/e2e/test_part1b_ui.py::test_blank_input_disables_analysis PASSED   [ 52%]
+tests/e2e/test_part1b_ui.py::test_findings_render_as_text_with_live_checks PASSED [ 55%]
+tests/e2e/test_part1b_ui.py::test_no_findings_message_does_not_claim_security PASSED [ 58%]
+tests/e2e/test_part1b_ui.py::test_quota_error_is_shown_without_findings PASSED [ 61%]
+tests/e2e/test_part1b_ui.py::test_missing_key_is_explained PASSED        [ 63%]
+tests/e2e/test_responsive_a11y.py::test_no_horizontal_scroll_at_360px[overview] PASSED [ 66%]
+tests/e2e/test_responsive_a11y.py::test_no_horizontal_scroll_at_360px[methodology] PASSED [ 69%]
+tests/e2e/test_responsive_a11y.py::test_no_horizontal_scroll_at_360px[part-1a] PASSED [ 72%]
+tests/e2e/test_responsive_a11y.py::test_no_horizontal_scroll_at_360px[part-1b] PASSED [ 75%]
+tests/e2e/test_responsive_a11y.py::test_no_horizontal_scroll_at_360px[evaluation] PASSED [ 77%]
+tests/e2e/test_responsive_a11y.py::test_no_horizontal_scroll_at_360px[evidence] PASSED [ 80%]
+tests/e2e/test_responsive_a11y.py::test_mobile_menu_opens_and_closes PASSED [ 83%]
+tests/e2e/test_responsive_a11y.py::test_desktop_hides_menu_button PASSED [ 86%]
+tests/e2e/test_responsive_a11y.py::test_part1a_controls_are_keyboard_operable_with_visible_focus PASSED [ 88%]
+tests/e2e/test_responsive_a11y.py::test_space_activates_sample_button PASSED [ 91%]
+tests/e2e/test_responsive_a11y.py::test_first_render_under_one_second PASSED [ 94%]
+tests/e2e/test_responsive_a11y.py::test_text_contrast_meets_wcag_aa[light] PASSED [ 97%]
+tests/e2e/test_responsive_a11y.py::test_text_contrast_meets_wcag_aa[dark] PASSED [100%]
+
+===================== 36 passed, 177 deselected in 23.02s =====================
