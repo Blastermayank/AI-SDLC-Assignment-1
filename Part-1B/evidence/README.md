@@ -64,7 +64,7 @@ Notes:
 | Folder | Contents |
 |---|---|
 | `eval-console/` | Unedited console output of each evaluator run since 2026-11-07 (UTC start time in the file name) |
-| `unit-test-results/` | Unedited `pytest` output for `tests/test_evaluator.py`: `20261106-190039` 9 failed / 13 passed (before implementation); `20261106-190128` 22 passed; `20261106-190356` 2 failed / 21 passed (refined fingerprint requirement); `20261106-190451` 23 passed |
+| `unit-test-results/` | Unedited `pytest` output for `tests/test_evaluator.py`: `20261106-190039` 9 failed / 13 passed (before implementation); `20261106-190128` 22 passed; `20261106-190356` 2 failed / 21 passed (refined fingerprint requirement); `20261106-190451` 23 passed; `20261110-192616` 23 passed (cross-check on branch `001-web-demo-portal` after the portal was built, Part 1B code unchanged) |
 
 Change-cycle plan and tasks:
 [`../change-cycles/2026-11-07-missing-input-case/`](../change-cycles/2026-11-07-missing-input-case/).

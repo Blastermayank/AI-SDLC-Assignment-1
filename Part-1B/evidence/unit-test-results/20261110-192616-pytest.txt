@@ -1,0 +1,31 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0 -- E:\Mtech Assignment\AI_SDLC\Assignment-1\Part-1B\.venv\Scripts\python.exe
+rootdir: E:\Mtech Assignment\AI_SDLC\Assignment-1\Part-1B
+plugins: anyio-4.16.0
+collecting ... collected 23 items
+
+tests/test_evaluator.py::test_valid_success_response_has_no_invariant_violations PASSED [  4%]
+tests/test_evaluator.py::test_inv8_default_expected_status_is_success PASSED [  8%]
+tests/test_evaluator.py::test_inv8_expected_error_status_accepts_error_response PASSED [ 13%]
+tests/test_evaluator.py::test_inv8_expected_error_status_rejects_success_response PASSED [ 17%]
+tests/test_evaluator.py::test_inv3_error_response_must_not_contain_findings PASSED [ 21%]
+tests/test_evaluator.py::test_inv4_invalid_severity_is_reported PASSED   [ 26%]
+tests/test_evaluator.py::test_inv6_evidence_must_be_an_exact_source_excerpt PASSED [ 30%]
+tests/test_evaluator.py::test_inv7_more_than_ten_findings_is_reported PASSED [ 34%]
+tests/test_evaluator.py::test_sem1_sem2_alias_matches_expected_category PASSED [ 39%]
+tests/test_evaluator.py::test_sem1_unrelated_category_does_not_match PASSED [ 43%]
+tests/test_evaluator.py::test_sem3_negative_case_requires_empty_findings PASSED [ 47%]
+tests/test_evaluator.py::test_blank_input_returns_error_response_without_model_call[] PASSED [ 52%]
+tests/test_evaluator.py::test_blank_input_returns_error_response_without_model_call[   ] PASSED [ 56%]
+tests/test_evaluator.py::test_blank_input_returns_error_response_without_model_call[   \n\t  ] PASSED [ 60%]
+tests/test_evaluator.py::test_dataset_fingerprint_is_sha256_of_canonical_json PASSED [ 65%]
+tests/test_evaluator.py::test_dataset_fingerprint_ignores_line_endings_and_bom PASSED [ 69%]
+tests/test_evaluator.py::test_archive_copies_current_report_to_next_run_number PASSED [ 73%]
+tests/test_evaluator.py::test_archive_skips_when_an_identical_archive_exists PASSED [ 78%]
+tests/test_evaluator.py::test_archive_names_incomplete_reports PASSED    [ 82%]
+tests/test_evaluator.py::test_archive_does_nothing_without_a_current_report PASSED [ 86%]
+tests/test_evaluator.py::test_dataset_cases_have_required_fields_and_unique_ids PASSED [ 91%]
+tests/test_evaluator.py::test_dataset_covers_missing_mandatory_information PASSED [ 95%]
+tests/test_evaluator.py::test_original_cases_are_unchanged PASSED        [100%]
+
+============================= 23 passed in 1.62s ==============================

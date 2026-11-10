@@ -27,6 +27,7 @@ Folder names are UTC start times. Each folder holds one unedited transcript per 
 | `20261106-185500` | Baseline on Python 3.13.18 with pinned tools, before any change in the 2026-11-07 cycle | PASS | PASS | PASS (3/3) | PASS |
 | `20261106-185552` | New spec-derived tests added, implementation unchanged | PASS | PASS | FAIL (12 passed, 3 failed) | FAIL |
 | `20261106-185625` | After the AC3 repair (`ca00520`) | PASS | PASS | PASS (15/15) | PASS |
+| `20261110-192610` | Cross-check on branch `001-web-demo-portal` after the portal was built (Part 1A code unchanged) | PASS | PASS | PASS (15/15) | PASS |
 
 Change-cycle plan and tasks:
 [`../change-cycles/2026-11-07-ac3-retry-after/`](../change-cycles/2026-11-07-ac3-retry-after/).
