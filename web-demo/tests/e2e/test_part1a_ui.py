@@ -18,9 +18,9 @@ def send(page, client_id, tier, expected_rows):
     page.fill("#rl-client-id", client_id)
     page.select_option("#rl-tier", tier)
     page.click("#rl-send")
-    page.wait_for_function(
-        f"document.querySelectorAll('#rl-history tr.history-row').length === {expected_rows}"
-    )
+    # A locator assertion, not wait_for_function: string predicates are evaluated like eval()
+    # and the portal's Content-Security-Policy (no 'unsafe-eval') correctly blocks them.
+    expect(page.locator("#rl-history tr.history-row")).to_have_count(expected_rows)
 
 
 def test_tier_table_lists_three_tiers(page):

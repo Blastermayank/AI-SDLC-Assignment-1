@@ -7,6 +7,7 @@ import asyncio
 import json
 import logging
 import os
+import threading
 
 import httpx
 import pytest
@@ -135,7 +136,12 @@ def test_slow_model_ends_with_timeout(sentinel_key, fake_gemini):
 
 def test_second_analysis_while_one_runs_is_refused(client, app, sentinel_key, fake_gemini):
     calls = fake_gemini(json.dumps(GOOD))
-    asyncio.run(app.state.analysis_lock.acquire())
+    # Hold the app's real lock. asyncio.run() runs in a helper thread because a browser test
+    # earlier in the same pytest process may leave an event loop on the main thread.
+    holder = threading.Thread(target=asyncio.run, args=(app.state.analysis_lock.acquire(),))
+    holder.start()
+    holder.join()
+    assert app.state.analysis_lock.locked()
     response = analyze(client)
     assert response.status_code == 409
     assert response.json()["error"]["category"] == "busy"

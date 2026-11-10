@@ -245,7 +245,9 @@ textarea { font-family: var(--font-mono); font-size: 13.5px; line-height: 1.55; 
 .field-error { color: var(--fail); font-size: 0.86rem; font-weight: 600; }
 
 /* ---------- Tables ---------- */
-.table-wrap { width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+/* position: relative keeps absolutely positioned children (e.g. .visually-hidden labels) inside
+   the scroll box; without it they escape and widen the page on narrow screens. */
+.table-wrap { position: relative; width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
 table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 th, td { padding: 9px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); }
 th { background: var(--surface-2); font-weight: 650; font-size: 0.82rem; color: var(--text-muted); white-space: nowrap; }
