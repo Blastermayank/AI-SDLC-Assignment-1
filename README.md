@@ -5,38 +5,75 @@ This repository contains two projects demonstrating specification-driven develop
 - **Part 1A:** A deterministic tiered rate-limiter component using the Token Bucket algorithm.
 - **Part 1B:** A non-deterministic AI-assisted security code review application using actual Google Gemini API inference.
 
-Each project includes a specification, implementation, and development evidence. Part 1A includes an automated quality/security/test harness; Part 1B includes a three-layer evaluation harness.
+Each project includes a specification, implementation, and development evidence. Part 1A includes an automated quality/security/test harness; Part 1B includes a three-layer evaluation harness. A local web portal (`web-demo/`) presents and runs both projects.
+
+Technical documentation: [docs/architecture.md](docs/architecture.md) (how each part works) and [docs/testing-and-evidence.md](docs/testing-and-evidence.md) (every harness, every saved run, and how to verify the evidence).
+
+## Quick start on Windows
+
+1. Install Python 3.13 (`winget install Python.Python.3.13`) and Git, then get the repository:
+
+   ```powershell
+   git clone <repository-url> Assignment-1
+   cd Assignment-1
+   ```
+
+2. For Part 1B and the portal's live analysis, store a Google Gemini API key as the Windows user environment variable `GEMINI_API_KEY` (see [Configure Gemini authentication](#configure-gemini-authentication)), then open a new PowerShell window.
+3. Start the web portal (it creates its own virtual environment on first run) and open `http://127.0.0.1:8000`:
+
+   ```powershell
+   cd web-demo
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\start.ps1
+   ```
+
+4. To run each part's own harness, follow the installation steps in the Part 1A and Part 1B sections below.
 
 ## Repository structure
 
 ```text
 Assignment-1/
-├── .gitignore
 ├── README.md
-├── Part-1A/
-│   ├── .harness/run.ps1
-│   ├── evidence/
-│   │   ├── initial-generation/limiter_initial.py
-│   │   └── final-generation/limiter_final.py
-│   ├── src/limiter.py
-│   ├── tests/test_limiter.py
-│   ├── requirements.txt
+├── docs/                          technical documentation
+├── Part-1A/                       deterministic: tiered rate limiter
+│   ├── speckit.constitution.md    Spec Kit constitution
+│   ├── speckit.specify.md         specification, acceptance criteria, clarifications
+│   ├── change-cycles/             plan and tasks of the 2026-11-07 AC3 change cycle
+│   ├── src/limiter.py             Token Bucket implementation
+│   ├── tests/test_limiter.py      specification-derived tests
+│   ├── .harness/run.ps1           harness: Ruff, Bandit, Pytest
+│   ├── requirements.txt           pinned dependencies
+│   ├── harness-log.md             harness log and human decision
+│   └── evidence/
+│       ├── README.md              index of the evidence
+│       ├── initial-generation/    first generated implementation
+│       ├── final-generation/      implementation after harness-driven repair
+│       └── harness-results/       every saved harness run (transcripts + summary.json)
+├── Part-1B/                       non-deterministic: Gemini security code reviewer
 │   ├── speckit.constitution.md
-│   ├── speckit.specify.md
-│   └── harness-log.md
-└── Part-1B/
-    ├── .harness/evaluate.py
-    ├── evals/dataset.json
-    ├── evidence/
-    │   ├── initial-generation/
-    │   ├── final-generation/
-    │   ├── dataset-before-security-refinement.json
-    │   └── eval-results*.json
-    ├── src/reviewer.py
-    ├── requirements.txt
-    ├── speckit.constitution.md
-    ├── speckit.specify.md
-    └── harness-log.md
+│   ├── speckit.specify.md         specification: output schema, invariants, threshold
+│   ├── change-cycles/             plan and tasks of the 2026-11-07 missing-input change cycle
+│   ├── src/reviewer.py            Gemini call and response validation
+│   ├── evals/dataset.json         16 evaluation cases
+│   ├── .harness/evaluate.py       three-layer evaluation harness
+│   ├── tests/                     unit tests for the evaluator (no network)
+│   ├── requirements.txt
+│   ├── harness-log.md
+│   └── evidence/
+│       ├── README.md              index of every evaluation run
+│       ├── initial-generation/, final-generation/
+│       ├── dataset-before-security-refinement.json
+│       ├── eval-results.json      current report; earlier runs kept as eval-results-run-*.json
+│       ├── eval-console/          console output of evaluator runs
+│       └── unit-test-results/     saved unit-test runs
+└── web-demo/                      local web portal presenting both parts (built with Spec Kit)
+    ├── README.md
+    ├── start.ps1                  one-command start
+    ├── app/, static/              FastAPI backend; HTML, CSS and JavaScript frontend
+    ├── tests/                     API, security and browser tests
+    ├── .harness/run.ps1           portal harness
+    ├── specs/001-web-demo-portal/ Spec Kit specification, plan, research, contracts, tasks
+    ├── .specify/                  Spec Kit configuration and the portal constitution
+    └── evidence/                  harness runs, live Gemini and quickstart validation records
 ```
 
 ## Prerequisites
@@ -180,6 +217,9 @@ From the `Part-1B` directory, with the virtual environment active and the API ke
 ```powershell
 @'
 import json
+import sys
+
+sys.path.insert(0, "src")  # reviewer.py lives in Part-1B/src
 from reviewer import analyze_code
 
 sample = "query = f'SELECT * FROM users WHERE id = {user_id}'"
@@ -258,6 +298,8 @@ Both projects preserve separate initial-generation and final-generation source s
 
 Historical reports document outcomes observed during development. Since the model is non-deterministic and the dataset inputs were refined, do not treat all historical scores as directly comparable unless the dataset version for each run is known.
 
+On 2026-11-07 each part went through a recorded change cycle (specification clarification, plan and tasks, tests first, a recorded failure, the repair, a recorded pass). The plans and tasks are in each part's `change-cycles/` folder, and every saved run is listed in `Part-1A/evidence/README.md` and `Part-1B/evidence/README.md`. [docs/testing-and-evidence.md](docs/testing-and-evidence.md) summarises all of it, with the commit for each step.
+
 ## Security considerations
 
 - Keep API credentials in environment variables; never commit them.
@@ -293,4 +335,5 @@ Historical reports document outcomes observed during development. Since the mode
 | Part 1B AI integration | Google Gemini API, `google-genai` |
 | Part 1B contract validation | JSON Schema, `jsonschema` |
 | Part 1B evaluation | Python evaluation harness |
+| Web portal | FastAPI, uvicorn, HTML/CSS/vanilla JavaScript; Ruff, Bandit, Pytest, Playwright (Edge) |
 | Version control | Git, GitHub |
