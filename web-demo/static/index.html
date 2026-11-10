@@ -102,6 +102,7 @@
                   <tr><th scope="row">Harness</th><td>Ruff (lint), Bandit (security), Pytest (unit and acceptance tests)</td><td>Layer 1 schema, Layer 2 invariants, Layer 3 category/alias matching over a dataset</td></tr>
                   <tr><th scope="row">Pass rule</th><td>Every gate passes</td><td>Aggregate score of 80% or more, with every case completed</td></tr>
                   <tr><th scope="row">External dependency</th><td>None</td><td>Gemini API: availability, quota and network</td></tr>
+                  <tr><th scope="row">Known limitations</th><td>Token buckets are kept in memory: they are lost when the server restarts and are not shared between processes. A client's tier is fixed by its first request.</td><td>Findings vary between runs. The evaluation covers only the 16 cases in its dataset. Layer 3 compares category names and aliases, not the quality of the explanation. Every live result depends on Gemini's availability and quota.</td></tr>
                 </tbody>
               </table>
             </div>

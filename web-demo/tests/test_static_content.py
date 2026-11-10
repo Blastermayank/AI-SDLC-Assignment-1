@@ -37,6 +37,28 @@ def test_six_sections_exist(section):
     assert f'id="section-{section}"' in HTML
 
 
+def section_text(section):
+    match = re.search(rf'<section id="section-{section}".*?</section>', HTML, re.DOTALL)
+    assert match, f"section {section} missing"
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", match.group(0))).lower()
+
+
+@pytest.mark.parametrize(
+    "limitation",
+    [
+        "in memory",  # Part 1A: rate-limit state
+        "not shared between processes",  # Part 1A
+        "vary between runs",  # Part 1B: model variability
+        "only the 16 cases",  # Part 1B: dataset coverage
+        "names and aliases",  # Part 1B: alias-based semantic layer
+        "availability",  # Part 1B: service dependency
+    ],
+)
+def test_overview_states_known_limitations(limitation):
+    # US4 independent test: the limitations must be answerable from the overview itself.
+    assert limitation in section_text("overview")
+
+
 def test_no_llm_judge_claim():
     assert "llm-as-a-judge" not in LOWER
     for match in re.finditer(r"llm judge", LOWER):
