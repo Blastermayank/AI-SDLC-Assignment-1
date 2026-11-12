@@ -45,22 +45,41 @@ Reports before 2026-11-07 do not record a dataset fingerprint.
 | `eval-results-run-6-86.7pct.json` | 2026-11-06 06:19:02 | 15 | 15 | 13 | 86.7% | PASS | 3, 8 | none found | - | not recorded |
 | `eval-results-run-7-incomplete.json` | 2026-11-06 19:02:14 | 16 | 14 | 12 | partial 85.7% (not final) | INCOMPLETE | 3, 8 (Layer 3); 15 interrupted | none found | Gemini 503 UNAVAILABLE on case 15 | `e6f3c1d2…` (file bytes, CRLF checkout) |
 | `eval-results-run-8-incomplete.json` | 2026-11-06 19:02:47 | 16 | 0 | 0 | none | INCOMPLETE | 1 interrupted | - | Gemini 503 UNAVAILABLE on case 1 | `e6f3c1d2…` (file bytes, CRLF checkout) |
-| `eval-results.json` | 2026-11-12 18:48:51 | 16 | 5 | 4 | partial 80.0% (not final) | INCOMPLETE | 3 (Layer 3: no finding for expected XSS); 6 interrupted | - | Gemini 503 UNAVAILABLE ("high demand") on case 6 | `f9e71665…` (canonical JSON; matches the current dataset) |
+| `eval-results-run-9-incomplete.json` | 2026-11-12 18:48:51 | 16 | 5 | 4 | partial 80.0% (not final) | INCOMPLETE | 3 (Layer 3: no finding for expected XSS); 6 interrupted | - | Gemini 503 UNAVAILABLE ("high demand") on case 6 | `f9e71665…` |
+| `eval-results-run-10-incomplete.json` | 2026-11-12 19:01:25 | 16 | 0 | 0 | none | INCOMPLETE | 1 interrupted | - | Gemini 503 UNAVAILABLE on case 1 | `f9e71665…` |
+| `eval-results-run-11-incomplete.json` | 2026-11-12 19:03:56 | 16 | 0 | 0 | none | INCOMPLETE | 1 interrupted | - | Gemini 503 UNAVAILABLE on case 1 | `f9e71665…` |
+| `eval-results-run-12-incomplete.json` | 2026-11-12 19:09:55 | 16 | 0 | 0 | none | INCOMPLETE | 1 interrupted | - | Gemini 503 UNAVAILABLE on case 1 | `f9e71665…` |
+| `eval-results-run-13-incomplete.json` | 2026-11-12 19:10:20 | 16 | 1 | 1 | partial 100.0% (not final) | INCOMPLETE | 2 interrupted | - | Gemini 503 UNAVAILABLE on case 2 | `f9e71665…` |
+| `eval-results-run-14-incomplete.json` | 2026-11-12 19:10:57 | 16 | 4 | 3 | partial 75.0% (not final) | INCOMPLETE | 3 (Layer 3); 5 interrupted | - | Gemini 503 UNAVAILABLE on case 5 | `f9e71665…` |
+| `eval-results-run-15-incomplete.json` | 2026-11-12 19:11:07 | 16 | 1 | 1 | partial 100.0% (not final) | INCOMPLETE | 2 interrupted | - | Gemini 503 UNAVAILABLE on case 2 | `f9e71665…` |
+| `eval-results-run-16-incomplete.json` | 2026-11-12 19:11:25 | 16 | 0 | 0 | none | INCOMPLETE | 1 interrupted | - | Connection dropped by the server on case 1 (`RemoteProtocolError: Server disconnected without sending a response`); the evaluator labels this an execution error (see notes) | `f9e71665…` |
+| `eval-results-run-17-incomplete.json` | 2026-11-12 19:11:54 | 16 | 4 | 3 | partial 75.0% (not final) | INCOMPLETE | 3 (Layer 3); 5 interrupted | - | Gemini 503 UNAVAILABLE on case 5 | `f9e71665…` |
+| `eval-results.json` | 2026-11-12 19:29:27 | 16 | 13 | 11 | partial 84.6% (not final) | INCOMPLETE | 3, 8 (Layer 3: no finding for expected XSS / Insecure Configuration); 14 interrupted | - | Gemini 503 UNAVAILABLE on case 14 | `f9e71665…` |
 
 Notes:
 
 - Run 6 was the current report at commit `2c88355` (the 86.7% result quoted in the README until
   2026-11-07). It was archived by the evaluator on 2026-11-07; its SHA-256 (`006786AB…`) is
   unchanged.
-- Runs 7 and 8 and the current report were made with the revised evaluator on the 16-case
-  dataset. All three were stopped by Gemini service errors ("model is currently experiencing
-  high demand"), so no final score exists yet for the 16-case dataset. These are service
-  failures, recorded separately from application failures as the specification requires.
-  Run 8 was the current report until the evaluator archived it on 2026-11-12 (UTC); its
-  content is identical to the version committed on 2026-11-07.
+- Runs 7 to 17 and the current report were made with the revised evaluator on the 16-case
+  dataset. Every one was stopped by a Gemini service problem (mostly 503 "model is currently
+  experiencing high demand"), so no final score exists yet for the 16-case dataset. These are
+  service failures, recorded separately from application failures as the specification
+  requires. Runs 9-17 and the current report were attempts by the repository owner on
+  2026-11-13 local time (2026-11-12 UTC); each attempt's console output is in `eval-console/`.
+  Run 8 was the current report until the evaluator archived it; its content is identical to
+  the version committed on 2026-11-07, and run 9 is identical to the attempt committed in
+  `6b473df`.
+- Run 16: the Gemini server closed the connection without a response
+  (`httpx.RemoteProtocolError`). The evaluator counts only the SDK's `APIError` types as
+  service errors, so it labelled this an "execution error". The cause is the service, not the
+  reviewer or the evaluator logic. The evaluator was not changed during evaluation.
+- Across the completed cases of runs 7-17 and the current report, the only Layer 3 failures
+  are cases 3 and 8, the same two cases that failed in run 6.
 - Runs 7 and 8 record a file-bytes fingerprint. The fingerprint was changed to canonical JSON
   content later on 2026-11-07 because file bytes differ between CRLF and LF checkouts of the
-  same dataset; the current report records the canonical value.
+  same dataset; runs 9-17 and the current report record the canonical value `f9e71665…`,
+  which matches the current dataset.
 
 ## Other evidence
 

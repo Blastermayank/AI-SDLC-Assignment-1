@@ -1,0 +1,120 @@
+{
+  "timestamp_utc": "2026-11-12T18:48:51.671541+00:00",
+  "model": "gemini-3.5-flash-lite",
+  "threshold": 80.0,
+  "dataset_file": "evals/dataset.json",
+  "dataset_sha256": "f9e71665da2f8c926e06ea05a3ae8e902dc1287f541af136bd718cad4dfa1e16",
+  "total_cases": 16,
+  "completed_cases": 5,
+  "passed_cases": 4,
+  "partial_score": 80.0,
+  "aggregate_score": null,
+  "status": "INCOMPLETE",
+  "service_error": {
+    "case_id": 6,
+    "error_type": "ServerError",
+    "details": "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+  },
+  "results": [
+    {
+      "id": 1,
+      "expected_status": "success",
+      "layer1": true,
+      "layer2": true,
+      "layer3": true,
+      "pass": true,
+      "error": "",
+      "model_output": {
+        "status": "success",
+        "findings": [
+          {
+            "vulnerability": "SQL Injection",
+            "severity": "High",
+            "description": "The query is constructed using Python f-string interpolation with user_id, which allows untrusted input to directly modify the SQL query structure, leading to potential SQL injection vulnerabilities.",
+            "evidence": "query = f'SELECT * FROM users WHERE id = {user_id}'",
+            "remediation": "Use parameterized queries or prepared statements to safely pass user inputs into the database query instead of string formatting."
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "expected_status": "success",
+      "layer1": true,
+      "layer2": true,
+      "layer3": true,
+      "pass": true,
+      "error": "",
+      "model_output": {
+        "status": "success",
+        "findings": [
+          {
+            "vulnerability": "Command Injection",
+            "severity": "High",
+            "description": "The application passes an untrusted variable directly into a shell command execution function without proper sanitization, allowing potential arbitrary command execution.",
+            "evidence": "os.system('ping ' + target_ip)",
+            "remediation": "Avoid using os.system with shell concatenation. Use the subprocess module with a list of arguments and shell=False instead."
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "expected_status": "success",
+      "layer1": true,
+      "layer2": true,
+      "layer3": false,
+      "pass": false,
+      "error": "L3: Expected 'Cross-Site Scripting (XSS)', got []. ",
+      "model_output": {
+        "status": "success",
+        "findings": []
+      }
+    },
+    {
+      "id": 4,
+      "expected_status": "success",
+      "layer1": true,
+      "layer2": true,
+      "layer3": true,
+      "pass": true,
+      "error": "",
+      "model_output": {
+        "status": "success",
+        "findings": [
+          {
+            "vulnerability": "Hardcoded Credentials",
+            "severity": "High",
+            "description": "A non-empty string literal containing a password is hardcoded directly into the source code, which exposes the credential in version control and to anyone with access to the source code.",
+            "evidence": "password = 'supersecretadmin123'",
+            "remediation": "Remove the hardcoded password and load the credential securely from an environment variable or a dedicated secret management service."
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "expected_status": "success",
+      "layer1": true,
+      "layer2": true,
+      "layer3": true,
+      "pass": true,
+      "error": "",
+      "model_output": {
+        "status": "success",
+        "findings": []
+      }
+    },
+    {
+      "id": 6,
+      "expected_status": "success",
+      "layer1": false,
+      "layer2": false,
+      "layer3": false,
+      "pass": false,
+      "error": "Gemini API error: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+      "model_output": null,
+      "service_error": true
+    }
+  ]
+}

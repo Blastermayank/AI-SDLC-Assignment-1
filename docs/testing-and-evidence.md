@@ -66,7 +66,8 @@ inputs, is in [Part-1B/evidence/README.md](../Part-1B/evidence/README.md)):
 | Run 6, latest completed | 15 | 86.7% PASS; cases 3 and 8 failed Layer 3 |
 | Run 7 | 16 | INCOMPLETE: Gemini 503 on case 15 (14 completed, 12 passed; partial, not final) |
 | Run 8 | 16 | INCOMPLETE: Gemini 503 on case 1 |
-| Current `eval-results.json` (2026-11-13 local) | 16 | INCOMPLETE: Gemini 503 on case 6 (5 completed, 4 passed; case 3 failed Layer 3; partial, not final) |
+| Runs 9-17 (2026-11-13 local) | 16 | INCOMPLETE: Gemini 503 (one dropped connection) after 0-5 completed cases |
+| Current `eval-results.json` (2026-11-13 local) | 16 | INCOMPLETE: Gemini 503 on case 14 (13 completed, 11 passed; cases 3 and 8 failed Layer 3; partial 84.6%, not final) |
 
 The 16-case dataset has no completed run yet. Service errors stop a
 run as INCOMPLETE and are never counted as application failures or passes.

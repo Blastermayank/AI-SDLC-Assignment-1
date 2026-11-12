@@ -1,0 +1,52 @@
+{
+  "timestamp_utc": "2026-11-12T19:11:07.497370+00:00",
+  "model": "gemini-3.5-flash-lite",
+  "threshold": 80.0,
+  "dataset_file": "evals/dataset.json",
+  "dataset_sha256": "f9e71665da2f8c926e06ea05a3ae8e902dc1287f541af136bd718cad4dfa1e16",
+  "total_cases": 16,
+  "completed_cases": 1,
+  "passed_cases": 1,
+  "partial_score": 100.0,
+  "aggregate_score": null,
+  "status": "INCOMPLETE",
+  "service_error": {
+    "case_id": 2,
+    "error_type": "ServerError",
+    "details": "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+  },
+  "results": [
+    {
+      "id": 1,
+      "expected_status": "success",
+      "layer1": true,
+      "layer2": true,
+      "layer3": true,
+      "pass": true,
+      "error": "",
+      "model_output": {
+        "status": "success",
+        "findings": [
+          {
+            "vulnerability": "SQL Injection",
+            "severity": "High",
+            "description": "User input is directly interpolated into a SQL query string without parameterization, allowing potential attackers to manipulate the query structure.",
+            "evidence": "query = f'SELECT * FROM users WHERE id = {user_id}'",
+            "remediation": "Use parameterized queries or prepared statements to safely handle user input in SQL operations."
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "expected_status": "success",
+      "layer1": false,
+      "layer2": false,
+      "layer3": false,
+      "pass": false,
+      "error": "Gemini API error: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+      "model_output": null,
+      "service_error": true
+    }
+  ]
+}

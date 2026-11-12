@@ -288,7 +288,7 @@ The configured aggregate passing threshold is **80%**.
 
 Cases 3 and 8 failed the semantic layer in this run. It is the result of one evaluation run on the 15-case dataset, not a general accuracy guarantee. Model outputs and scores may vary between runs.
 
-**16-case dataset (since 2026-11-07):** no completed evaluation yet. Every attempt so far was stopped by Gemini `503 UNAVAILABLE` ("model is currently experiencing high demand") service errors and is recorded as `INCOMPLETE`, not as a pass or a failure: run 7 (14 of 16 cases completed, 12 passed; partial score 85.7%, not final), run 8 (stopped on case 1), and the current report of 2026-11-13 (5 of 16 completed, 4 passed; partial score 80.0%, not final; case 3 failed the semantic layer). See `Part-1B/evidence/README.md` for every saved run.
+**16-case dataset (since 2026-11-07):** no completed evaluation yet. Every attempt so far (runs 7-17 and the current report) was stopped by a Gemini service problem, almost always `503 UNAVAILABLE` ("model is currently experiencing high demand"), and is recorded as `INCOMPLETE`, not as a pass or a failure. The furthest attempts were run 7 (14 of 16 cases completed, 12 passed; partial score 85.7%, not final) and the current report of 2026-11-13 (13 of 16 completed, 11 passed; partial score 84.6%, not final). In every attempt, the only cases that failed were 3 and 8, both at the semantic layer, as in run 6. See `Part-1B/evidence/README.md` for every saved run.
 
 ---
 
