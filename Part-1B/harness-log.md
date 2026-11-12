@@ -22,3 +22,20 @@
 ## Human Review
 - **Decision**: ACCEPT.
 - **Limitations**: The AI reviewer currently relies on a strict keyword-based mapping (mocked). In a production setting using an LLM, the semantic evaluation layer (Layer 3) would require an independent LLM-as-a-Judge rather than string comparison, and prompt injection risks require stronger upstream filtering.
+
+---
+
+## Final Version: Gemini (recorded 2026-11-13)
+
+The entries above were recorded on 2026-11-05 for the first version. The entries below cover the final version, which calls Gemini (commit `2c88355`, 2026-11-06).
+
+- **Model/Configuration**: gemini-3.5-flash-lite
+- **Result**: Incomplete due to Gemini being busy.
+- **Evidence**:
+  - Latest completed run: run 6, 86.7% (13/15 cases), PASS against the 80% threshold (`evidence/eval-results-run-6-86.7pct.json`).
+  - 16-case dataset: runs 7-17 and the current `evidence/eval-results.json` are all INCOMPLETE (Gemini 503 "high demand"); furthest attempt: 13 of 16 cases completed, 11 passed.
+  - Every run is listed in `evidence/README.md`.
+
+## Human Review (2026-11-13)
+- **Decision**: REJECT.
+- **Limitations**: Gemini is unstable, which causes denial of service when we need it.
