@@ -1,0 +1,31 @@
+Starting Gemini 3-layer evaluation...
+Model: gemini-3.5-flash-lite
+Dataset cases: 16
+Dataset SHA-256: f9e71665da2f8c926e06ea05a3ae8e902dc1287f541af136bd718cad4dfa1e16
+Passing threshold: 80.0%
+
+Evaluating case 1...
+  PASS
+Evaluating case 2...
+  PASS
+Evaluating case 3...
+  FAIL: L3: Expected 'Cross-Site Scripting (XSS)', got []. 
+Evaluating case 4...
+  PASS
+Evaluating case 5...
+  PASS
+Evaluating case 6...
+  API ERROR: ServerError
+Previous report archived to: E:\Mtech Assignment\AI_SDLC\Assignment-1\Part-1B\evidence\eval-results-run-8-incomplete.json
+
+========== EVALUATION SUMMARY ==========
+Completed: 5/16
+Passed: 4
+Partial score (incomplete run): 80.0%
+Aggregate score: NOT FINAL
+Threshold: 80.0%
+Final status: INCOMPLETE
+Report saved to: E:\Mtech Assignment\AI_SDLC\Assignment-1\Part-1B\evidence\eval-results.json
+
+A Gemini API error interrupted evaluation.
+This is recorded separately from application test failures.

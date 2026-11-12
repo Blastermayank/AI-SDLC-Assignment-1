@@ -288,7 +288,7 @@ The configured aggregate passing threshold is **80%**.
 
 Cases 3 and 8 failed the semantic layer in this run. It is the result of one evaluation run on the 15-case dataset, not a general accuracy guarantee. Model outputs and scores may vary between runs.
 
-**16-case dataset (since 2026-11-07):** no completed evaluation yet. Both runs on 2026-11-07 were stopped by Gemini `503 UNAVAILABLE` ("model is currently experiencing high demand") service errors and are recorded as `INCOMPLETE`, not as passes or failures. The first got 14 of 16 cases through, with 12 passed (partial score 85.7%, not final); the second stopped on case 1. See `Part-1B/evidence/README.md` for every saved run.
+**16-case dataset (since 2026-11-07):** no completed evaluation yet. Every attempt so far was stopped by Gemini `503 UNAVAILABLE` ("model is currently experiencing high demand") service errors and is recorded as `INCOMPLETE`, not as a pass or a failure: run 7 (14 of 16 cases completed, 12 passed; partial score 85.7%, not final), run 8 (stopped on case 1), and the current report of 2026-11-13 (5 of 16 completed, 4 passed; partial score 80.0%, not final; case 3 failed the semantic layer). See `Part-1B/evidence/README.md` for every saved run.
 
 ---
 
@@ -322,7 +322,7 @@ On 2026-11-07 each part went through a recorded change cycle (specification clar
 - Inference depends on Gemini API availability, network connectivity, and a valid API credential.
 - Model responses may vary between runs.
 - The 16-case dataset cannot represent every vulnerability, language, or application context.
-- The 16-case dataset has no completed evaluation yet (Gemini service errors on 2026-11-07).
+- The 16-case dataset has no completed evaluation yet (Gemini service errors on every attempt so far).
 - Semantic evaluation uses category aliases rather than an independent semantic judge.
 - Passing the 80% threshold does not establish production-grade security-review reliability.
 

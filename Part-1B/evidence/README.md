@@ -44,20 +44,23 @@ Reports before 2026-11-07 do not record a dataset fingerprint.
 | `eval-results-run-5-86.7pct.json` | 2026-11-06 06:15:11 | 15 | 15 | 13 | 86.7% | PASS | 6, 12 | none found | - | not recorded |
 | `eval-results-run-6-86.7pct.json` | 2026-11-06 06:19:02 | 15 | 15 | 13 | 86.7% | PASS | 3, 8 | none found | - | not recorded |
 | `eval-results-run-7-incomplete.json` | 2026-11-06 19:02:14 | 16 | 14 | 12 | partial 85.7% (not final) | INCOMPLETE | 3, 8 (Layer 3); 15 interrupted | none found | Gemini 503 UNAVAILABLE on case 15 | `e6f3c1d2…` (file bytes, CRLF checkout) |
-| `eval-results.json` | 2026-11-06 19:02:47 | 16 | 0 | 0 | none | INCOMPLETE | 1 interrupted | - | Gemini 503 UNAVAILABLE on case 1 | `e6f3c1d2…` (file bytes, CRLF checkout) |
+| `eval-results-run-8-incomplete.json` | 2026-11-06 19:02:47 | 16 | 0 | 0 | none | INCOMPLETE | 1 interrupted | - | Gemini 503 UNAVAILABLE on case 1 | `e6f3c1d2…` (file bytes, CRLF checkout) |
+| `eval-results.json` | 2026-11-12 18:48:51 | 16 | 5 | 4 | partial 80.0% (not final) | INCOMPLETE | 3 (Layer 3: no finding for expected XSS); 6 interrupted | - | Gemini 503 UNAVAILABLE ("high demand") on case 6 | `f9e71665…` (canonical JSON; matches the current dataset) |
 
 Notes:
 
 - Run 6 was the current report at commit `2c88355` (the 86.7% result quoted in the README until
   2026-11-07). It was archived by the evaluator on 2026-11-07; its SHA-256 (`006786AB…`) is
   unchanged.
-- Runs 7 and the current report were made with the revised evaluator on the 16-case dataset.
-  Both were stopped by Gemini service errors ("model is currently experiencing high demand"),
-  so no final score exists yet for the 16-case dataset. These are service failures, recorded
-  separately from application failures as the specification requires.
-- The two INCOMPLETE reports record a file-bytes fingerprint. The fingerprint was changed to
-  canonical JSON content later on 2026-11-07 because file bytes differ between CRLF and LF
-  checkouts of the same dataset.
+- Runs 7 and 8 and the current report were made with the revised evaluator on the 16-case
+  dataset. All three were stopped by Gemini service errors ("model is currently experiencing
+  high demand"), so no final score exists yet for the 16-case dataset. These are service
+  failures, recorded separately from application failures as the specification requires.
+  Run 8 was the current report until the evaluator archived it on 2026-11-12 (UTC); its
+  content is identical to the version committed on 2026-11-07.
+- Runs 7 and 8 record a file-bytes fingerprint. The fingerprint was changed to canonical JSON
+  content later on 2026-11-07 because file bytes differ between CRLF and LF checkouts of the
+  same dataset; the current report records the canonical value.
 
 ## Other evidence
 

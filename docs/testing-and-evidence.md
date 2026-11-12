@@ -65,9 +65,10 @@ inputs, is in [Part-1B/evidence/README.md](../Part-1B/evidence/README.md)):
 | Runs 1-6 (2026-11-06) | 15 | 66.7% FAIL, then 86.7%, 93.3%, 86.7%, 86.7%, 86.7% (all PASS). Runs 1-4 used earlier inputs for some cases |
 | Run 6, latest completed | 15 | 86.7% PASS; cases 3 and 8 failed Layer 3 |
 | Run 7 | 16 | INCOMPLETE: Gemini 503 on case 15 (14 completed, 12 passed; partial, not final) |
-| Current `eval-results.json` | 16 | INCOMPLETE: Gemini 503 on case 1 |
+| Run 8 | 16 | INCOMPLETE: Gemini 503 on case 1 |
+| Current `eval-results.json` (2026-11-13 local) | 16 | INCOMPLETE: Gemini 503 on case 6 (5 completed, 4 passed; case 3 failed Layer 3; partial, not final) |
 
-The 16-case dataset has no completed run yet; the next run is pending. Service errors stop a
+The 16-case dataset has no completed run yet. Service errors stop a
 run as INCOMPLETE and are never counted as application failures or passes.
 
 ## 4. Web portal
