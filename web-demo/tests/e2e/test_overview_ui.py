@@ -36,13 +36,15 @@ def test_health_badge_reports_missing_key(page, no_key):
 
 
 def test_repository_link_states(page, live_server):
-    page.goto("/")
-    expect(page.locator("#repo-link")).to_have_text("Repository link not configured")
-
+    # Both states are set here, so the test does not depend on the real portal-config.json.
     original = live_server.app.state.settings
     url = "https://github.com/example-owner/example-repo"
-    live_server.app.state.settings = dataclasses.replace(original, repository_url=url)
     try:
+        live_server.app.state.settings = dataclasses.replace(original, repository_url=None)
+        page.goto("/")
+        expect(page.locator("#repo-link")).to_have_text("Repository link not configured")
+
+        live_server.app.state.settings = dataclasses.replace(original, repository_url=url)
         page.reload()
         expect(page.locator("#repo-link a")).to_have_attribute("href", url)
         expect(page.locator("#overview-repo-link a")).to_have_text(url)

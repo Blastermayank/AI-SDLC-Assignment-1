@@ -14,7 +14,7 @@ Technical documentation: [docs/architecture.md](docs/architecture.md) (how each 
 1. Install Python 3.13 (`winget install Python.Python.3.13`) and Git, then get the repository:
 
    ```powershell
-   git clone <repository-url> Assignment-1
+   git clone https://github.com/Blastermayank/AI-SDLC-Assignment-1.git Assignment-1
    cd Assignment-1
    ```
 
